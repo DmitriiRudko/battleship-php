@@ -25,37 +25,35 @@ class ModelUsers extends Model {
         return $result;
     }
 
-    public function userReady($gameId, $userCode) {
-        $sql = "SELECT  `users`
-                SET `ready` = 1
-                WHERE `code` = :code";
-
-
-        $id = $this->getUserId($userCode);
+    public function userReady($userId) {
         $sql = "UPDATE `users`
                 SET `ready` = 1
-                WHERE `code` = :code";
+                WHERE `id` = :id";
         $params = [
-            'code' => $userCode,
+            'id' => $userId,
         ];
-        $this->db->produceStatement($sql, $params);
-        print_r($this->db->lastInsertedId());
-//        $sql = "SELECT `initiator_id`, `guest_id`
-//                IF ()
-//                FROM `games`
-//                WHERE `id` = :gmaeId";
-//        $params = [
-//            'gameId' => $gameId,
-//        ];
-//        $playersIds = $this->db->getOne($sql, $params);
+        $result = $this->db->produceStatement($sql, $params);
     }
 
     public function getUserId($userCode) {
-        $sql = "SELECT `id` FROM `users` WHERE `code` = :code";
+        $sql = "SELECT `id` 
+                FROM `users` 
+                WHERE `code` = :code";
         $params = [
             'code' => $userCode,
         ];
         $id = $this->db->getOne($sql, $params);
-        return $id;
+        return $id['id'];
+    }
+
+    public function isReady($userId) {
+        $sql = "SELECT `ready` 
+                FROM `users` 
+                WHERE `id` = :id";
+        $params = [
+            'id' => $userId,
+        ];
+        $status = $this->db->getOne($sql, $params);
+        return (bool)$status;
     }
 }

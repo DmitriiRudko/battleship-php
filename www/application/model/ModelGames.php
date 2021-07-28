@@ -10,19 +10,42 @@ class ModelGames extends Model {
         parent::__construct();
     }
 
-    public function newGame($initiatorId) {
-        $invite = uniqid();
-        $sql = "INSERT INTO games (`initiator_id`, `invite`) 
-                VALUE (:initiator, :invite)";
+    public function newGame($initiatorId, $invitedId) {
+        $sql = "INSERT INTO games (`initiator_id`, `invited_id`, `turn`)
+                VALUES (:initiator, :invited, :turn)";
+        $turn = random_int(0, 1);
+        $turn = [$initiatorId, $invitedId][$turn];
         $params = [
             'initiator' => $initiatorId,
-            'invite' => $invite,
+            'invited' => $invitedId,
+            'turn' => $turn,
         ];
         $this->db->produceStatement($sql, $params);
         $result = [
             'id' => $this->db->lastInsertedId(),
-            'invite' => $invite,
         ];
         return $result;
+    }
+
+    public function getPlayersIds($gameId) {
+        $sql = "SELECT `initiator_id`, `invited_id`
+                FROM `games`
+                WHERE `id` = :id";
+        $params = [
+            'id' => $gameId,
+        ];
+        $result = $this->db->getOne($sql, $params);
+        return $result;
+    }
+
+    public function getGameStatus($gameId) {
+        $sql = "SELECT `status`
+                FROM `games`
+                WHERE `id` = :id";
+        $params = [
+            'id' => $gameId,
+        ];
+        $result = $this->db->getOne($sql, $params);
+        return $result['status'];
     }
 }
