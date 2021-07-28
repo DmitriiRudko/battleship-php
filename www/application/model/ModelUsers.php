@@ -26,6 +26,11 @@ class ModelUsers extends Model {
     }
 
     public function userReady($gameId, $userCode) {
+        $sql = "SELECT  `users`
+                SET `ready` = 1
+                WHERE `code` = :code";
+
+
         $id = $this->getUserId($userCode);
         $sql = "UPDATE `users`
                 SET `ready` = 1

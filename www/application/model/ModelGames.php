@@ -10,13 +10,19 @@ class ModelGames extends Model {
         parent::__construct();
     }
 
-    public function newGame() {  // НИХУЯ НЕ ПОНЯТНО ЧТО С КОДАМИ
-        $user = $this->newUser();
-        $sql = "INSERT INTO games (`initiator_id`) 
-                VALUE (:initiator)";
+    public function newGame($initiatorId) { 
+        $invite = uniqid();
+        $sql = "INSERT INTO games (`initiator_id`, `invite`) 
+                VALUE (:initiator, :invite)";
         $params = [
-            'initiator' => $user['id'],
+            'initiator' => $initiatorId,
+            'invite' => $invite,
         ];
-         $this->db->produceStatement($sql, $params);
+        $this->db->produceStatement($sql, $params);
+        $result = [
+            'id' => $this->db->lastInsertedId(),
+            'invite' => $invite,
+        ];
+        return $result;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 namespace Application\Core;
-require_once(dirname(__FILE__) . "/../Controllers/Start.php");
+require_once(dirname(__FILE__) . "/../controllers/Start.php");
 
 use Application\Controllers\Start;
 use Exception;
@@ -23,6 +23,7 @@ class Router {
         $urls = self::$routes[$urls[0]][$urls[1]];
         $controllerName = $urls[0];
         $method = $urls[1];
+
         try {
             $controller = new $controllerName();
             $controller->$method($params);
