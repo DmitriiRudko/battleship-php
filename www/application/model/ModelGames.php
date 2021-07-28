@@ -10,7 +10,7 @@ class ModelGames extends Model {
         parent::__construct();
     }
 
-    public function newGame($initiatorId) { 
+    public function newGame($initiatorId) {
         $invite = uniqid();
         $sql = "INSERT INTO games (`initiator_id`, `invite`) 
                 VALUE (:initiator, :invite)";
