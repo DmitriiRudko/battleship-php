@@ -7,7 +7,6 @@ use Application\Core\Model;
 
 class ModelWarships extends Model {
     public function getPlayerWarships($gameId, $playerCode) {
-
         $sql = "SELECT `number`, `size`, `x`, `y`, `orientation`
                 FROM `warships`
                 WHERE `game_id` = :gameId AND `player` = :playerCode";
@@ -19,7 +18,9 @@ class ModelWarships extends Model {
         return $warships;
     }
 
-    public function placeShip($gameId, $playersCode){
+    public function placeShip($gameId, $playerCode, $size, x, $y, $orientation, $number) {
+        $sql = "INSERT INTO `warships` (`game_id`, `player`, `size`, `x`, `y`, `orientation`, `number`)
+                VALUES (:game_id, :playerCode, :size, :x, :y, :orientation, :number)";
 
     }
 }

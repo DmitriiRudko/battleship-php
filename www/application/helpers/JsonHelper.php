@@ -21,4 +21,10 @@ class JsonHelper {
         http_response_code($code);
         echo '{"success":False}';
     }
+
+    public static function successTrue() {
+        header("Content-Type: application/json");
+        http_response_code(200);
+        echo '{"success":True}';
+    }
 }

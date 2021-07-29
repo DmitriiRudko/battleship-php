@@ -33,8 +33,12 @@ class PlaceShip extends Controller {
         $size = explode('-', $ship)[0];
         $number = explode('-', $ship)[1];
 
+
         if (!$field->isPossibleToPlace($size, $number, $orientation, $x, $y)) {
             JsonHelper::successFalse();
+        } else {
+            $this->modelWarships->placeShip($gameId, $playerCode, $size, x, $y, $orientation, $number);
+            JsonHelper::successTrue();
         }
     }
 }
