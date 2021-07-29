@@ -26,19 +26,57 @@ class PlaceShip extends Controller {
         $gameId = $params[0];
         $playerCode = $params[1];
         if ($this->modelGames->getGameStatus($gameId) != 1) return;
-        $ships = $this->modelWarships->getPlayerWarships($gameId, $playerCode);
-        $field = new FieldHelper($ships);
+
+        /* ЕБАНУТЬ ПРОВЕРКУ КОРРЕКТНОСТИ ВХОДНЫХ ДАННЫХ ЧЕРЕЗ game-status */
+
+        if (isset($_POST['ships'])) {
+            $this->placeMany($gameId, $playerCode);
+        } elseif (isset($_POST['x'], $_POST['y'])) {
+            $this->placeOne($gameId, $playerCode);
+        } else {
+            $this->removeOne($gameId, $playerCode);
+        }
+    }
+
+    public function placeOne($gameId, $playerCode) {
+        $placedShips = $this->modelWarships->getPlayerWarships($gameId, $playerCode);
+        $field = new FieldHelper($placedShips);
 
         extract($_POST);
         $size = explode('-', $ship)[0];
         $number = explode('-', $ship)[1];
 
-
         if (!$field->isPossibleToPlace($size, $number, $orientation, $x, $y)) {
             JsonHelper::successFalse();
         } else {
-            $this->modelWarships->placeShip($gameId, $playerCode, $size, x, $y, $orientation, $number);
+            $this->modelWarships->placeShip($gameId, $playerCode, $size, $x, $y, $orientation, $number);
             JsonHelper::successTrue();
         }
+    }
+
+    public function placeMany($gameId, $playerCode) {
+        $placedShips = $this->modelWarships->getPlayerWarships($gameId, $playerCode);
+        $field = new FieldHelper($placedShips);
+        $ships = json_decode($_POST['ships']);
+        foreach ($ships as $ship) {
+            if (!$field->isPossibleToPlace($ship->size, $ship->number, $ship->orientation, $ship->x, $ship->y)) {
+                JsonHelper::successFalse();
+                return;
+            } else {
+                $field->placeShip($ship->size, $ship->number, $ship->orientation, $ship->x, $ship->y);
+            }
+        }
+        foreach ($ships as $ship) {
+            $this->modelWarships->placeShip($gameId, $playerCode, $ship->size, $ship->x, $ship->y, $ship->orientation, $ship->number);
+        }
+        JsonHelper::successTrue();
+    }
+
+    public function removeOne($gameId, $playerCode) {
+        extract($_POST);
+        $size = explode('-', $ship)[0];
+        $number = explode('-', $ship)[1];
+        $this->modelWarships->removeShip($gameId, $playerCode, $size, $number);
+        JsonHelper::successTrue();
     }
 }

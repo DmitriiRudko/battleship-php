@@ -54,6 +54,6 @@ class ModelUsers extends Model {
             'id' => $userId,
         ];
         $status = $this->db->getOne($sql, $params);
-        return (bool)$status;
+        return boolval($status['ready']);
     }
 }

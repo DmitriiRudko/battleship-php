@@ -6,15 +6,16 @@ require_once(dirname(__FILE__) . "/../model/ModelGames.php");
 
 use Application\Model\ModelGames;
 use Application\Core\Controller;
+use Application\Model\ModelWarships;
 
 class ClearField extends Controller {
-    private $modelGames;
+    private $modelWarships;
 
     public function __construct() {
-        $this->modelGames = new ModelGames();
+        $this->modelWarships = new ModelWarships();
     }
 
-    public function startGame() {
+    public function removeAll($gameId, $playerCode) {
 
     }
 }

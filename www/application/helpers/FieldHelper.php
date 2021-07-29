@@ -14,8 +14,24 @@ class FieldHelper {
         $this->steps = $steps;
     }
 
-    public function placeShip($ship) {
-
+    public function placeShip($size, $number, $orientation, $x, $y) {
+        switch ($orientation) {
+            case 'vertical':
+                for ($i = 0; $i <= $size; $i++)
+                    $this->field[$y + $i][$x] = 1;
+                break;
+            case 'horizontal':
+                for ($j = 0; $j <= $size; $j++)
+                    $this->field[$y][$x + $j] = 1;
+                break;
+        }
+        $this->ships = array_merge($this->ships, [
+            'number' => $number,
+            'size' => $size,
+            'x' => $x,
+            'y' => $y,
+            'orientation' => $orientation,
+        ]);
     }
 
     private function createField() {
@@ -65,7 +81,7 @@ class FieldHelper {
             $this->createField();
         }
         switch ($orientation) {  //check location relative to other ships
-            case 'vertical':  // Проблемы с созданием изаполнением поля
+            case 'vertical':
                 for ($i = $y - 1; $i <= $y + $size; $i++) {
                     if ($this->field[$i][$x - 1] || $this->field[$i][$x] || $this->field[$i][$x + 1]) return False;
                 }

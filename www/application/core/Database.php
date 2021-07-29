@@ -40,9 +40,9 @@ class Database {
     }
 
     public function produceStatement($sql, $params = []) {
-        print_r($sql);
         $stm = $this->db->prepare($sql);
         $data = $stm->execute($params);
+
         return $data;
     }
 

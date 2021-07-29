@@ -48,4 +48,15 @@ class ModelGames extends Model {
         $result = $this->db->getOne($sql, $params);
         return $result['status'];
     }
+
+    public function setGameStatus($gameId, $status) {
+        $sql = "UPDATE `game`
+                SET `status` = :status
+                WHERE `id` = :id";
+        $params = [
+            'id' => $gameId,
+            'status' => $status,
+        ];
+        $this->db->produceStatement($sql, $params);
+    }
 }
