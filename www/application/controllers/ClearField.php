@@ -16,6 +16,7 @@ class ClearField extends Controller {
     }
 
     public function removeAll($gameId, $playerCode) {
-
+        //ПРОВЕРКА!!!
+        $this->modelWarships->clearField($gameId, $playerCode);
     }
 }
