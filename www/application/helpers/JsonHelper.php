@@ -4,7 +4,7 @@ namespace Application\Helpers;
 
 class JsonHelper {
     public static function jsonifyAndSend($data) {
-        header("Content-Type: application/json");
+        header('Content-Type: application/json');
         $json = json_encode($data);
         if ($json === false) {
             $json = json_encode(array("jsonError", json_last_error_msg()));
@@ -16,10 +16,15 @@ class JsonHelper {
         echo $json;
     }
 
-    public static function successFalse($code = 500) {
-        header("Content-Type: application/json");
+    public static function successFalse($message = 'Smth went wrong', $code = 500) {
+        header('Content-Type: application/json');
         http_response_code($code);
-        echo '{"success":False}';
+        $json = [
+            'success' => False,
+            'code' => $code,
+            'message' => $message,
+        ];
+        echo json_encode($json);
     }
 
     public static function successTrue() {

@@ -42,7 +42,6 @@ class Database {
     public function produceStatement($sql, $params = []) {
         $stm = $this->db->prepare($sql);
         $data = $stm->execute($params);
-
         return $data;
     }
 

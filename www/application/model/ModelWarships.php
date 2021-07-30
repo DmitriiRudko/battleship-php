@@ -49,7 +49,7 @@ class ModelWarships extends Model {
 
     public function clearField($gameId, $playerCode){
         $sql = "DELETE FROM `warships` WHERE 
-                (`game_id` = :gameId AND `player` = :playerCode";
+                (`game_id` = :gameId AND `player` = :playerCode)";
         $params = [
             'gameId' => $gameId,
             'playerCode' => $playerCode,
