@@ -15,16 +15,11 @@ use Application\Model\ModelWarships;
 class PlaceShip extends Controller {
     private $modelWarships;
 
-    private $modelGames;
-
-    private const GAME_HAS_NOT_BEGUN_STATUS = 1;
-
     public function __construct() {
         $this->modelWarships = new ModelWarships();
-        $this->modelGames = new ModelGames();
     }
 
-    public function placeShip($params) {
+    public function placeShip(array $params): void {
         $gameId = $params[0];
         $playerCode = $params[1];
 
@@ -33,22 +28,22 @@ class PlaceShip extends Controller {
             JsonHelper::successFalse('Wrong parameters');
             return;
         }
-        if ($gameInfo['status'] != self::GAME_HAS_NOT_BEGUN_STATUS) {
+        if ($gameInfo['status'] != ModelGames::GAME_HAS_NOT_BEGUN_STATUS) {
             JsonHelper::successFalse('Game has already begun');
             return;
         }
 
         if (isset($_POST['ships'])) {
-            $this->placeMany($gameId, $playerCode);
+            $this->placeMany($gameId, $gameInfo['me']['id']);
         } elseif (isset($_POST['x'], $_POST['y'])) {
-            $this->placeOne($gameId, $playerCode);
+            $this->placeOne($gameId, $gameInfo['me']['id']);
         } else {
-            $this->removeOne($gameId, $playerCode);
+            $this->removeOne($gameId, $gameInfo['me']['id']);
         }
     }
 
-    public function placeOne($gameId, $playerCode) {
-        $placedShips = $this->modelWarships->getPlayerWarships($gameId, $playerCode);
+    public function placeOne(int $gameId, int $playerId): void {
+        $placedShips = $this->modelWarships->getPlayerWarships($gameId, $playerId);
         $field = new FieldHelper($placedShips);
 
         extract($_POST);
@@ -58,34 +53,39 @@ class PlaceShip extends Controller {
         if (!$field->isPossibleToPlace($size, $number, $orientation, $x, $y)) {
             JsonHelper::successFalse('Ship is impossible to place in this position');
         } else {
-            $this->modelWarships->placeShip($gameId, $playerCode, $size, $x, $y, $orientation, $number);
+            $this->modelWarships->placeShip($gameId, $playerId, $size, $x, $y, $orientation, $number);
             JsonHelper::successTrue();
         }
     }
 
-    public function placeMany($gameId, $playerCode) {
-        $placedShips = $this->modelWarships->getPlayerWarships($gameId, $playerCode);
+    public function placeMany(int $gameId, int $playerId): void {
+        $placedShips = $this->modelWarships->getPlayerWarships($gameId, $playerId);
         $field = new FieldHelper($placedShips);
         $ships = json_decode($_POST['ships']);
+
         foreach ($ships as $ship) {
-            if (!$field->isPossibleToPlace($ship->size, $ship->number, $ship->orientation, $ship->x, $ship->y)) {
+            $size = explode('-', $ship->shipType)[0];
+            $number = explode('-', $ship->shipType)[1];
+            if (!$field->isPossibleToPlace($size, $number, $ship->orientation, $ship->x, $ship->y)) {
                 JsonHelper::successFalse('Some ships are impossible to place');
                 return;
             } else {
-                $field->placeShip($ship->size, $ship->number, $ship->orientation, $ship->x, $ship->y);
+                $field->placeShip($size, $number, $ship->orientation, $ship->x, $ship->y);
             }
         }
+
         foreach ($ships as $ship) {
-            $this->modelWarships->placeShip($gameId, $playerCode, $ship->size, $ship->x, $ship->y, $ship->orientation, $ship->number);
+            $this->modelWarships->placeShip($gameId, $playerId, $size, $ship->x, $ship->y, $ship->orientation, $number);
         }
+
         JsonHelper::successTrue();
     }
 
-    public function removeOne($gameId, $playerCode) {
+    public function removeOne(int $gameId, int $playerId): void {
         extract($_POST);
         $size = explode('-', $ship)[0];
         $number = explode('-', $ship)[1];
-        $this->modelWarships->removeShip($gameId, $playerCode, $size, $number);
+        $this->modelWarships->removeShip($gameId, $playerId, $size, $number);
         JsonHelper::successTrue();
     }
 }

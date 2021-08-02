@@ -10,7 +10,7 @@ class ModelUsers extends Model {
         parent::__construct();
     }
 
-    public function newUser() {
+    public function newUser(): array {
         $userCode = uniqid();
         $sql = "INSERT INTO users (`code`) 
                 VALUE (:code)";
@@ -25,7 +25,7 @@ class ModelUsers extends Model {
         return $result;
     }
 
-    public function userReady($userId) {
+    public function setUserReady(int $userId): void {
         $sql = "UPDATE `users`
                 SET `ready` = 1
                 WHERE `id` = :id";
@@ -35,7 +35,7 @@ class ModelUsers extends Model {
         $this->db->produceStatement($sql, $params);
     }
 
-    public function getUserId($userCode) {
+    public function getUserId(string $userCode): int {
         $sql = "SELECT `id` 
                 FROM `users` 
                 WHERE `code` = :code";
@@ -46,7 +46,7 @@ class ModelUsers extends Model {
         return $id['id'];
     }
 
-    public function isReady($userId) {
+    public function isReady(int $userId): bool {
         $sql = "SELECT `ready` 
                 FROM `users` 
                 WHERE `id` = :id";
@@ -54,6 +54,6 @@ class ModelUsers extends Model {
             'id' => $userId,
         ];
         $status = $this->db->getOne($sql, $params);
-        return boolval($status['ready']);
+        return (bool) $status['ready'];
     }
 }

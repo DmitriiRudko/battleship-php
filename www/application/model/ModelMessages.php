@@ -6,7 +6,11 @@ require_once(dirname(__FILE__) . "/../core/Model.php");
 use Application\Core\Model;
 
 class ModelMessages extends Model {
-    public function loadMessages($gameId, $from, $to) {
+    public const OFFSET_SEC = 60;
+
+    public const MESSAGE_MAX_LEN = 250;
+
+    public function loadMessages(int $gameId, int $from, int $to): array {
         $sql = "SELECT `sender`, `message`, UNIX_TIMESTAMP(`time`) as time
                 FROM `messages` 
                 WHERE `game_id` = :gameId AND UNIX_TIMESTAMP(`time`) > :from
@@ -21,13 +25,13 @@ class ModelMessages extends Model {
         return $messages;
     }
 
-    public function sendMessage($gameId, $sender, $message) {
+    public function sendMessage(int $gameId, int $senderId, string $message): void {
         $sql = "INSERT INTO `messages`
-                (`game_id`, `sender`, `message`)
+                (`game_id`, `user_id`, `message`)
                 VALUES (:gameId, :sender, :message)";
         $params = [
             'gameId' => $gameId,
-            'sender' => $sender,
+            'sender' => $senderId,
             'message' => $message,
         ];
         $this->db->produceStatement($sql, $params);

@@ -10,7 +10,7 @@ class Database {
 
     private $db;
 
-    public static function getInstance() {
+    public static function getInstance(): self {
         if (!isset(self::$instance)) {
             self::$instance = new self();
         }
@@ -25,27 +25,26 @@ class Database {
         }
     }
 
-    public function getOne($sql, $params = []) {
+    public function getOne(string $sql, array $params = []): array {
         $stm = $this->db->prepare($sql);
         $stm->execute($params);
         $data = $stm->fetch();
         return $data;
     }
 
-    public function getMany($sql, $params = []) {
+    public function getMany(string $sql, array $params = []): array {
         $stm = $this->db->prepare($sql);
         $stm->execute($params);
         $data = $stm->fetchAll();
         return $data;
     }
 
-    public function produceStatement($sql, $params = []) {
+    public function produceStatement(string $sql, array $params = []): void {
         $stm = $this->db->prepare($sql);
-        $data = $stm->execute($params);
-        return $data;
+        $stm->execute($params);
     }
 
-    public function lastInsertedId(){
+    public function lastInsertedId(): int {
         return $this->db->lastInsertId();
     }
 

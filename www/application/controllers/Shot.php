@@ -22,44 +22,38 @@ class Shot extends Controller {
 
     private $modelSteps;
 
-    private const GAME_HAS_NOT_BEGUN_STATUS = 1;
-
-    private const GAME_HAS_BEGUN_STATUS = 2;
-
-    private const GAME_OVER_STATUS = 3;
-
     public function __construct() {
         $this->modelGames = new ModelGames();
         $this->modelWarships = new ModelWarships();
         $this->modelSteps = new ModelSteps();
     }
 
-    public function shot($params) {
+    public function shot(array $params): void {
         $gameId = $params[0];
         $playerCode = $params[1];
 
         $gameInfo = $this->getGameInfo($gameId, $playerCode);
 
-        if ($gameInfo['status'] != self::GAME_HAS_BEGUN_STATUS) {
+        if ($gameInfo['status'] != ModelGames::GAME_HAS_BEGUN_STATUS) {
             switch ($gameInfo['status']) {
-                case self::GAME_HAS_NOT_BEGUN_STATUS:
+                case ModelGames::GAME_HAS_NOT_BEGUN_STATUS:
                     JsonHelper::successFalse('Game has not begun yet');
-                    return;
-                case self::GAME_OVER_STATUS:
+                case ModelGames::GAME_OVER_STATUS:
                     JsonHelper::successFalse('Game is already over');
-                    return;
+                default:
+                    JsonHelper::successFalse();
             }
+            return;
         }
 
-        $nextWhoGoes = $this->modelGames->whoIsNext($gameId);
-        if ($nextWhoGoes['code'] != $playerCode) {
+        if ($gameInfo['turn'] != $gameInfo['me']['id']) {
             JsonHelper::successFalse('This is not your turn');
             return;
         }
 
-        $steps = $this->modelSteps->getPlayerSteps($gameId, $playerCode);
-        $enemy = $this->modelGames->getEnemy($gameId, $playerCode);
-        $warships = $this->modelWarships->getPlayerWarships($gameId, $enemy['code']);
+        $steps = $this->modelSteps->getPlayerSteps($gameId, $gameInfo['me']['id']);
+        $enemy = $this->modelGames->getEnemy($gameId, $gameInfo['me']['id']);
+        $warships = $this->modelWarships->getPlayerWarships($gameId, $enemy['id']);
         $field = new FieldHelper($warships, $steps);
         extract($_POST);
         if (!$field->isPossibleToShoot($x, $y)) {
@@ -68,11 +62,11 @@ class Shot extends Controller {
         }
 
         $result = $field->shoot($x, $y);
-        $this->modelSteps->shoot($gameId, $playerCode, $x, $y);
+        $this->modelSteps->shoot($gameId, $gameInfo['me']['id'], $x, $y);
 
         if ($result) {
             if ($field->isOver()) {
-                $this->modelGames->setGameStatus($gameId, self::GAME_OVER_STATUS);
+                $this->modelGames->setGameStatus($gameId, ModelGames::GAME_OVER_STATUS);
             }
         } else {
             $this->modelGames->enemysTurn($gameId);

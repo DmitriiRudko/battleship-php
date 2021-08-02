@@ -11,7 +11,46 @@ class FieldHelper {
 
     private $steps;
 
-    public function __construct($warships = null, $steps = null) {
+    private function createShipsField(): void {
+        $this->fieldShips = array_fill(0, 10, array_fill(0, 10, null));
+        foreach ($this->ships as &$ship) {
+            switch ($ship['orientation']) {
+                case 'vertical':
+                    $x = $ship['x'];
+                    for ($y = $ship['y']; $y < $ship['y'] + $ship['size']; $y++)
+                        $this->fieldShips[$y][$x] = &$ship;
+                    break;
+                case 'horizontal':
+                    $y = $ship['y'];
+                    for ($x = $ship['x']; $x < $ship['x'] + $ship['size']; $x++)
+                        $this->fieldShips[$y][$x] = &$ship;
+                    break;
+            }
+        }
+    }
+
+    private function createShootsField(): void {
+        $this->fieldShoots = array_fill(0, 10, array_fill(0, 10, null));
+        foreach ($this->steps as $step) {
+            $this->shoot($step['x'], $step['y']);
+        }
+    }
+
+    private function countShipsSameTypes(array $ships, int $size): int {
+        $count = array_reduce($this->ships, function ($carry, $item) use ($size) {  // check the limit for ships of this type
+            return ($item['size'] === $size) ? $carry++ : $carry;
+        }, 0);
+        return $count;
+    }
+
+    private function isAlreadyExist(array $ships, int $size, int $number): bool {
+        $result = array_reduce($this->ships, function ($carry, $item) use ($size, $number) {
+            return ($item['size'] === $size && $item['number'] === $number) ? $carry = true : $carry;
+        }, false);
+        return $result;
+    }
+
+    public function __construct(array $warships = null, array $steps = null) {
         $this->ships = $warships;
         $this->steps = $steps;
         if (isset($this->steps)) {
@@ -21,7 +60,7 @@ class FieldHelper {
         }
     }
 
-    public function placeShip($size, $number, $orientation, $x, $y) {
+    public function placeShip(int $size, int $number, string $orientation, int $x, int $y) {
         switch ($orientation) {
             case 'vertical':
                 for ($i = 0; $i <= $size; $i++)
@@ -41,55 +80,22 @@ class FieldHelper {
         ]);
     }
 
-    private function createShipsField() {
-        $this->fieldShips = array_fill(0, 10, array_fill(0, 10, null));
-        foreach ($this->ships as &$ship) {
-            switch ($ship['orientation']) {
-                case 'vertical':
-                    $x = $ship['x'];
-                    for ($y = $ship['y']; $y < $ship['y'] + $ship['size']; $y++)
-                        $this->fieldShips[$y][$x] = &$ship;
-                    break;
-                case 'horizontal':
-                    $y = $ship['y'];
-                    for ($x = $ship['x']; $x < $ship['x'] + $ship['size']; $x++)
-                        $this->fieldShips[$y][$x] = &$ship;
-                    break;
-            }
-        }
-    }
-
-    private function createShootsField() {
-        $this->fieldShoots = array_fill(0, 10, array_fill(0, 10, null));
-        foreach ($this->steps as $step) {
-            $this->shoot($step['x'], $step['y']);
-        }
-    }
-
-    public function isPossibleToPlace($size, $number, $orientation, $x, $y) {
+    public function isPossibleToPlace(int $size, int $number, string $orientation, int $x, int $y): bool {
         if ($size < 1 || $size > 4) return false;
 
-        $countShipsSameTypes = array_reduce($this->ships, function ($carry, $item) use ($size) {  // check the limit for ships of this type
-            ($item['size'] == $size) ? $carry++ : null;
-            return $carry;
-        }, 0);
-        if ($size + $countShipsSameTypes > 4) return False;
+        if ($size + $this->countShipsSameTypes($this->ships, $size) > 4) return false;  // check the limit for ships of this type
 
-        $isAlreadyExist = array_reduce($this->ships, function ($carry, $item) use ($size, $number) {  // check if we already have this ship
-            ($item['size'] == $size && $item['number'] == $number) ? $carry = True : null;
-            return $carry;
-        }, False);
-        if ($isAlreadyExist) return False;
+        if ($this->isAlreadyExist($this->ships, $size, $number)) return false;  // check if we already have this ship
 
         switch ($orientation) {  // check the borders
             case 'vertical':
-                if ($y + $size - 1 > 9) return False;
+                if ($y + $size - 1 > 9) return false;
                 break;
             case 'horizontal':
-                if ($x + $size - 1 > 9) return False;
+                if ($x + $size - 1 > 9) return false;
                 break;
         }
-        if ($x < 0 || $x > 9 || $y < 0 || $y > 9) return False;
+        if ($x < 0 || $x > 9 || $y < 0 || $y > 9) return false;
 
         if (!isset($this->fieldShips)) {
             $this->createShipsField();
@@ -97,16 +103,16 @@ class FieldHelper {
         switch ($orientation) {  //check location relative to other ships
             case 'vertical':
                 for ($i = $y - 1; $i <= $y + $size; $i++) {
-                    if ($this->fieldShips[$i][$x - 1] || $this->fieldShips[$i][$x] || $this->fieldShips[$i][$x + 1]) return False;
+                    if ($this->fieldShips[$i][$x - 1] || $this->fieldShips[$i][$x] || $this->fieldShips[$i][$x + 1]) return false;
                 }
                 break;
             case 'horizontal':
                 for ($j = $x - 1; $j <= $x + $size; $j++) {
-                    if ($this->fieldShips[$y - 1][$j] || $this->fieldShips[$y][$j] || $this->fieldShips[$y + 1][$j]) return False;
+                    if ($this->fieldShips[$y - 1][$j] || $this->fieldShips[$y][$j] || $this->fieldShips[$y + 1][$j]) return false;
                 }
                 break;
         }
-        return True;
+        return true;
     }
 
     public function isPossibleToShoot($x, $y) {

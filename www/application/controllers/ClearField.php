@@ -16,14 +16,17 @@ class ClearField extends Controller {
         $this->modelWarships = new ModelWarships();
     }
 
-    public function removeAll($params) {
+    public function removeAll(array $params): void {
         $gameId = $params[0];
         $playerCode = $params[1];
-        if (!$this->getGameInfo($gameId, $playerCode)) {
+        $gameInfo = $this->getGameInfo($gameId, $playerCode);
+        if (!$gameInfo) {
             JsonHelper::successFalse('Wrong parameters');
             return;
         }
-        $this->modelWarships->clearField($gameId, $playerCode);
+
+        $this->modelWarships->clearField($gameId, $gameInfo['me']['id']);
+
         JsonHelper::successTrue();
     }
 }

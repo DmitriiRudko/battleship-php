@@ -27,8 +27,6 @@ class Status extends Controller {
 
     private $fieldHelper;
 
-    private const GAME_HAS_NOT_BEGUN_STATUS = 1;
-
     public function __construct() {
         $this->modelGames = new ModelGames();
         $this->modelUsers = new ModelUsers();
@@ -38,12 +36,11 @@ class Status extends Controller {
 
     }
 
-    public function gameInfo($params) {
+    public function gameInfo(array $params): void {
         $gameId = $params[0];
         $playerCode = $params[1];
         $gameInfo = $this->getGameInfo($gameId, $playerCode);
-        if (!$gameInfo)
-        {
+        if (!$gameInfo) {
             JsonHelper::successFalse('Wrong parameters');
             return;
         }
@@ -53,25 +50,25 @@ class Status extends Controller {
                 'id' => $gameId,
                 'status' => $gameInfo['status'],
                 'invite' => $gameInfo['invited']['code'],
-                'myTurn' => $this->modelGames->whoIsNext($gameId) == $playerCode,
+                'myTurn' => $gameInfo['me']['id'] == $gameInfo['turn'],
             ]
         ];
-        if ($info['game']['status'] == self::GAME_HAS_NOT_BEGUN_STATUS)
+        if ($info['game']['status'] === ModelGames::GAME_HAS_NOT_BEGUN_STATUS)
             $info['game'] = array_merge($info['game'], [
                 'meReady' => $this->modelUsers->isReady($this->modelUsers->getUserId($playerCode)),
             ]);
         if (!$params['short']) {
             $enemy = $this->modelGames->getEnemy($gameId, $playerCode);
-            $myShips = $this->modelWarships->getPlayerWarships($gameId, $playerCode);
-            $enemyShips = $this->modelWarships->getPlayerWarships($gameId, $enemy['code']);
-            $mySteps = $this->modelSteps->getPlayerSteps($gameId, $playerCode);
-            $enemySteps = $this->modelSteps->getPlayerSteps($gameId, $enemy['code']);
+            $myShips = $this->modelWarships->getPlayerWarships($gameId, $enemy['id']);
+            $enemyShips = $this->modelWarships->getPlayerWarships($gameId, $enemy['id']);
+            $mySteps = $this->modelSteps->getPlayerSteps($gameId, $gameInfo['me']['id']);
+            $enemySteps = $this->modelSteps->getPlayerSteps($gameId, $enemy['id']);
 
             $fieldsInfo = $this->fieldHelper::getFieldsInfo($myShips, $enemyShips, $mySteps, $enemySteps);
             $info = array_merge($info, $fieldsInfo);
         }
         $info = array_merge_recursive($info, [
-            'success' => True,
+            'success' => true,
         ]);
 
         JsonHelper::jsonifyAndSend($info);

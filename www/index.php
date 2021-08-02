@@ -7,4 +7,4 @@ require_once('application/core/Router.php');
 
 use Application\Core\Router;
 
-Router::Route();
+Router::route();

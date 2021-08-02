@@ -12,25 +12,24 @@ use Application\Helpers\JsonHelper;
 class ChatLoad extends Controller {
     private $modelMessages;
 
-    private const OFFSET_SEC = 60;
-
     public function __construct() {
         $this->modelMessages = new ModelMessages();
     }
 
-    public function loadMessages($params) {
+    public function loadMessages(array $params): void {
         $gameId = $params[0];
         $playerCode = $params[1];
         if (!$this->getGameInfo($gameId, $playerCode)) {
             JsonHelper::successFalse('Wrong parameters');
             return;
-        }        if (!$this->getGameInfo($gameId, $playerCode)) {
+        }
+        if (!$this->getGameInfo($gameId, $playerCode)) {
             JsonHelper::successFalse('Wrong parameters');
             return;
         }
 
         isset($_GET['lastTime']) ? $lastTime = (int)$_GET['lastTime'] : $lastTime = time();
-        $messagesRaw = $this->modelMessages->loadMessages($gameId, $lastTime - self::OFFSET_SEC, $lastTime);
+        $messagesRaw = $this->modelMessages->loadMessages($gameId, $lastTime - ModelMessages::OFFSET_SEC, $lastTime);
         $messagesPretty = array_map(function ($message) use ($playerCode) {
             return [
                 'my' => $playerCode == $message['sender'],
@@ -40,9 +39,10 @@ class ChatLoad extends Controller {
         }, $messagesRaw);
         $messagesPretty = [
             'messages' => $messagesPretty,
-            'lastTime' => $lastTime - self::OFFSET_SEC,
-            'success' => True,
+            'lastTime' => $lastTime - ModelMessages::OFFSET_SEC,
+            'success' => true,
         ];
+
         JsonHelper::jsonifyAndSend($messagesPretty);
     }
 }

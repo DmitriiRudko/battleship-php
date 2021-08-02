@@ -6,24 +6,25 @@ require_once(dirname(__FILE__) . "/../Core/Model.php");
 use Application\Core\Model;
 
 class ModelSteps extends Model {
-    public function getPlayerSteps($gameId, $playerCode) {
+    public function getPlayerSteps(int $gameId, int $playerId): array {
         $sql = "SELECT `x`, `y`
                 FROM `steps`
-                WHERE `game_id` = :id";
+                WHERE `game_id` = :id AND `user_id` = :playerId";
         $params = [
             'id' => $gameId,
+            'playerId' => $playerId,
         ];
         $steps = $this->db->getMany($sql, $params);
         return $steps;
     }
 
-    public function shoot($gameId, $playerCode, $x, $y) {
+    public function shoot(int $gameId, int $playerId, int $x, int $y): void {
         $sql = "INSERT INTO 
-                `steps` (`player`, `game_id`, `x`, `y`)
-                VALUES (:code, :id, :x, :y)";
+                `steps` (`user_id`, `game_id`, `x`, `y`)
+                VALUES (:playerId, :gameId, :x, :y)";
         $params = [
-            'id' => $gameId,
-            'code' => $playerCode,
+            'gameId' => $gameId,
+            'playerId' => $playerId,
             'x' => $x,
             'y' => $y,
         ];

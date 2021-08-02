@@ -6,11 +6,18 @@ require_once(dirname(__FILE__) . "/../Core/Model.php");
 use Application\Core\Model;
 
 class ModelGames extends Model {
+
+    public const GAME_HAS_NOT_BEGUN_STATUS = 1;
+
+    public const GAME_HAS_BEGUN_STATUS = 2;
+
+    public const GAME_OVER_STATUS = 3;
+
     public function __construct() {
         parent::__construct();
     }
 
-    public function newGame($initiatorId, $invitedId) {
+    public function newGame($initiatorId, $invitedId): array {
         $sql = "INSERT INTO games (`initiator_id`, `invited_id`, `turn`)
                 VALUES (:initiator, :invited, :turn)";
         $turn = random_int(0, 1);
@@ -30,10 +37,12 @@ class ModelGames extends Model {
     public function getEnemy($gameId, $playerCode) {
         $gameInfo = $this->getGameInfo($gameId);
         switch ($playerCode) {
-            case $gameInfo['invited']['id']:
+            case $gameInfo['invited']['code']:
                 return $gameInfo['initiator'];
-            case $gameInfo['initiator']['id']:
+            case $gameInfo['initiator']['code']:
                 return $gameInfo['invited'];
+            default:
+                return null;
         }
     }
 
@@ -44,10 +53,12 @@ class ModelGames extends Model {
                 return $gameInfo['invited'];
             case $gameInfo['initiator']['id']:
                 return $gameInfo['initiator'];
+            default:
+                return null;
         }
     }
 
-    public function getGameInfo($gameId) {
+    public function getGameInfo($gameId): array {
         $sql = "SELECT *
                 FROM `games`
                 WHERE `id` = :id";
@@ -87,7 +98,7 @@ class ModelGames extends Model {
         $params = [
             'gameId' => $gameId,
         ];
-        $this->db->produceStatement($sql, $params)['turn'];
+        $this->db->produceStatement($sql, $params);
     }
 
     public function setGameStatus($gameId, $status) {

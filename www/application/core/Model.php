@@ -2,6 +2,7 @@
 
 namespace Application\Core;
 require_once(dirname(__FILE__) . "/../core/Database.php");
+
 use Application\Core\Database;
 
 

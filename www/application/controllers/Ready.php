@@ -20,17 +20,13 @@ class Ready extends Controller {
 
     private $modelWarships;
 
-    private const SHIPS_AMOUNT = 10;
-
-    private const GAME_HAS_BEGUN_STATUS = 2;
-
     public function __construct() {
         $this->modelUsers = new ModelUsers();
         $this->modelGames = new ModelGames();
         $this->modelWarships = new ModelWarships();
     }
 
-    public function userReady($params) {
+    public function setUserReady(array $params): void {
         $gameId = $params[0];
         $playerCode = $params[1];
         $gameInfo = $this->getGameInfo($gameId, $playerCode);
@@ -39,28 +35,36 @@ class Ready extends Controller {
             JsonHelper::successFalse('Wrong parameters');
             return;
         }
-        $playerShips = $this->modelWarships->getPlayerWarships($gameId, $playerCode);
+        $playerShips = $this->modelWarships->getPlayerWarships($gameId, $gameInfo['me']['id']);
+        if (count($playerShips) != ModelWarships::SHIPS_AMOUNT) {
+            JsonHelper::successFalse('You have not placed all the ships yet');
+            return;
+        }
 
+        $enemyStatus = null;
         switch ($playerCode) {
             case $gameInfo['initiator']['code']:
                 $userId = $gameInfo['initiator']['id'];
-                $this->modelUsers->userReady($userId);
+                $this->modelUsers->setUserReady($userId);
                 $enemyStatus = $gameInfo['invited']['ready'];
                 break;
             case $gameInfo['invited']['code']:
                 $userId = $gameInfo['invited']['id'];
-                $this->modelUsers->userReady($userId);
+                $this->modelUsers->setUserReady($userId);
                 $enemyStatus = $gameInfo['initiator']['ready'];
                 break;
+            default:
+                JsonHelper::successFalse();
+                return;
         }
 
         if ($enemyStatus) {
-            $this->modelGames->setGameStatus($gameId, self::GAME_HAS_BEGUN_STATUS);
+            $this->modelGames->setGameStatus($gameId, ModelGames::GAME_HAS_BEGUN_STATUS);
         }
 
         $response = [
             'enemyReady' => (bool)$enemyStatus,
-            'success' => True,
+            'success' => true,
         ];
 
         JsonHelper::jsonifyAndSend($response);

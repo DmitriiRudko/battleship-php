@@ -9,7 +9,9 @@ require_once(dirname(__FILE__) . "/../controllers/ChatSend.php");
 require_once(dirname(__FILE__) . "/../controllers/ClearField.php");
 require_once(dirname(__FILE__) . "/../controllers/Shot.php");
 require_once(dirname(__FILE__) . "/../controllers/Status.php");
+require_once(dirname(__FILE__) . "/../controllers/NotFound.php");
 
+use Application\Controllers\NotFound;
 use Application\Controllers\Start;
 use Application\Controllers\Ready;
 use Application\Controllers\PlaceShip;
@@ -23,30 +25,35 @@ use Exception;
 class Router {
     private static $routes = [
         'api' => [
-            'start' => [Start::class, 'startGame'],
-            'ready' => [Ready::class, 'userReady'],
-            'place-ship' => [PlaceShip::class, 'placeShip'],
-            'chat-load' => [ChatLoad::class, 'loadMessages'],
-            'chat-send' => [ChatSend::class, 'sendMessage'],
-            'clear-field' => [ClearField::class, 'removeAll'],
-            'shot' => [Shot::class, 'shot'],
-            'status' => [Status::class, 'gameInfo'],
+            'start' => ['controllerName' => Start::class, 'method' => 'startGame'],
+            'ready' => ['controllerName' => Ready::class, 'method' => 'setUserReady'],
+            'place-ship' => ['controllerName' => PlaceShip::class, 'method' => 'placeShip'],
+            'chat-load' => ['controllerName' => ChatLoad::class, 'method' => 'loadMessages'],
+            'chat-send' => ['controllerName' => ChatSend::class, 'method' => 'sendMessage'],
+            'clear-field' => ['controllerName' => ClearField::class, 'method' => 'removeAll'],
+            'shot' => ['controllerName' => Shot::class, 'method' => 'shot'],
+            'status' => ['controllerName' => Status::class, 'method' => 'gameInfo'],
         ]
     ];
 
-    public static function Route() {
-        $url = rtrim($_SERVER['REQUEST_URI'], '/');
-        $urls = array_slice(explode('/', $url), 1);
-        $params = array_slice(explode('/', $url), 3);
-        $params[1] = explode('?', $params[1])[0];
-        $urls = self::$routes[$urls[0]][$urls[1]];
-        $controllerName = $urls[0];
-        $method = $urls[1];
+    public static function route() {
+        $url = trim($_SERVER['REQUEST_URI'], '/');
+        $url = explode('?', $url)[0];
+        $url = explode('/', $url);
+        $handler = self::$routes;
+        while (count($url)) {
+            $segment = $url[0];
+            if ($handler[$segment]) {
+                array_shift($url);
+                $handler = $handler[$segment];
+            } else break;
+        }
+        extract($handler);
         try {
             $controller = new $controllerName();
-            $controller->$method($params);
+            $controller->$method($url);
         } catch (Exception $ex) {
-            header('HTTP/1.1 400 Bad Request');
+            NotFound::notFound();
         }
     }
 }
