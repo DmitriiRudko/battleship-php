@@ -27,28 +27,6 @@ class ModelGames extends Model {
         return $result;
     }
 
-    public function getPlayersIds($gameId) {
-        $sql = "SELECT `initiator_id`, `invited_id`
-                FROM `games`
-                WHERE `id` = :id";
-        $params = [
-            'id' => $gameId,
-        ];
-        $result = $this->db->getOne($sql, $params);
-        return $result;
-    }
-
-    public function getGameStatus($gameId) {
-        $sql = "SELECT `status`
-                FROM `games`
-                WHERE `id` = :id";
-        $params = [
-            'id' => $gameId,
-        ];
-        $result = $this->db->getOne($sql, $params);
-        return $result['status'];
-    }
-
     public function getEnemy($gameId, $playerCode) {
         $gameInfo = $this->getGameInfo($gameId);
         switch ($playerCode) {
@@ -67,11 +45,6 @@ class ModelGames extends Model {
             case $gameInfo['initiator']['id']:
                 return $gameInfo['initiator'];
         }
-    }
-
-    public function getInvited($gameId) {
-        $gameInfo = $this->getGameInfo($gameId);
-        return $gameInfo['invited'];
     }
 
     public function getGameInfo($gameId) {

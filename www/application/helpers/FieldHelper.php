@@ -129,7 +129,7 @@ class FieldHelper {
             $this->fieldShips[$y][$x]['health']--;
         }
         if (!$this->fieldShips[$y][$x]['health']) {
-            switch ($this->fieldShips[$y][$x]['orientation']) {  //check location relative to other ships
+            switch ($this->fieldShips[$y][$x]['orientation']) {
                 case 'vertical':
                     for ($i = $y - 1; $i <= $y + $this->fieldShips[$y][$x]['size']; $i++) {
                         $i >= 0 && $x > 0 ? $this->fieldShoots[$i][$x - 1] = 1 : null;

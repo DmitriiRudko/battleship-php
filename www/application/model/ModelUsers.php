@@ -32,7 +32,7 @@ class ModelUsers extends Model {
         $params = [
             'id' => $userId,
         ];
-        $result = $this->db->produceStatement($sql, $params);
+        $this->db->produceStatement($sql, $params);
     }
 
     public function getUserId($userCode) {

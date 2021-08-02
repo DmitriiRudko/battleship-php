@@ -47,7 +47,7 @@ class ModelWarships extends Model {
         $this->db->produceStatement($sql, $params);
     }
 
-    public function clearField($gameId, $playerCode){
+    public function clearField($gameId, $playerCode) {
         $sql = "DELETE FROM `warships` WHERE 
                 (`game_id` = :gameId AND `player` = :playerCode)";
         $params = [
