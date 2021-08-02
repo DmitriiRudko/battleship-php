@@ -1,8 +1,8 @@
 <?php
 
 namespace Application\Model;
-//require_once(dirname(__FILE__) . "/../сore/Model.php");
-require_once ('./application/core/Model.php');
+require_once(dirname(__FILE__) . "/../core/Model.php");
+//require_once ('./application/core/Model.php');
 use Application\Core\Model;
 
 class ModelGames extends Model {
