@@ -11,11 +11,11 @@ class FieldHelper {
 
     private $steps;
 
-    public function __construct($warships, $steps = null) {
+    public function __construct($warships = null, $steps = null) {
         $this->ships = $warships;
         $this->steps = $steps;
         if (isset($this->steps)) {
-             foreach ($this->ships as &$ship) {
+            foreach ($this->ships as &$ship) {
                 $ship['health'] = $ship['size'];
             }
         }
@@ -132,21 +132,57 @@ class FieldHelper {
             switch ($this->fieldShips[$y][$x]['orientation']) {  //check location relative to other ships
                 case 'vertical':
                     for ($i = $y - 1; $i <= $y + $this->fieldShips[$y][$x]['size']; $i++) {
-                        $this->fieldShoots[$i][$x - 1] = 1;
-                        $this->fieldShoots[$i][$x] = 1;
-                        $this->fieldShoots[$i][$x + 1] = 1;
+                        $i >= 0 && $x > 0 ? $this->fieldShoots[$i][$x - 1] = 1 : null;
+                        $i >= 0 ? $this->fieldShoots[$i][$x] = 1 : null;
+                        $x <= 9 ? $this->fieldShoots[$i][$x + 1] = 1 : null;
                     }
                     break;
                 case 'horizontal':
                     for ($j = $x - 1; $j <= $x + $this->fieldShips[$y][$x]['size']; $j++) {
-                        $this->fieldShoots[$y - 1][$j] = 1;
-                        $this->fieldShoots[$y][$j] = 1;
-                        $this->fieldShoots[$y + 1][$j] = 1;
+                        $j >= 0 && $y > 0 ? $this->fieldShoots[$y - 1][$j] = 1 : null;
+                        $j >= 0 ? $this->fieldShoots[$y][$j] = 1 : null;
+                        $y <= 9 ? $this->fieldShoots[$y + 1][$j] = 1 : null;
                     }
                     break;
             }
         }
         return (bool)$this->fieldShips[$y][$x];
+    }
+
+    public static function getFieldsInfo($myShips, $enemyShips, $mySteps, $enemySteps) {
+        $myField = array_fill(0, 10, array_fill(0, 10, [
+            0 => 'empty',
+            1 => 0,
+        ]));
+        $field = new FieldHelper($myShips, $enemySteps);
+        $field->createShipsField();
+        $field->createShootsField();
+        for ($i = 0; $i < 10; $i++)
+            for ($j = 0; $j < 10; $j++) {
+                if ($field->fieldShips[$i][$j])
+                    $myField[$i][$j][0] = $field->fieldShips[$i][$j]['size'] . '-' . $field->fieldShips[$i][$j]['number'];
+                if ($field->fieldShoots[$i][$j])
+                    $myField[$i][$j][1] = $field->fieldShoots[$i][$j];
+            }
+
+        $enemyField = array_fill(0, 10, array_fill(0, 10, [
+            0 => 'empty',
+            1 => 0,
+        ]));
+        $field = new FieldHelper($enemyShips, $mySteps);
+        $field->createShipsField();
+        $field->createShootsField();
+        for ($i = 0; $i < 10; $i++)
+            for ($j = 0; $j < 10; $j++) {
+                if ($field->fieldShips[$i][$j])
+                    $myField[$i][$j][0] = $field->fieldShips[$i][$j]['size'] . '-' . $field->fieldShips[$i][$j]['number'];
+                if ($field->fieldShoots[$i][$j])
+                    $myField[$i][$j][1] = $field->fieldShoots[$i][$j];
+            }
+        return [
+            'fieldMy' => $myField,
+            'fieldEnemy' => $enemyField,
+        ];
     }
 
     public function isOver() {

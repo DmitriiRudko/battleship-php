@@ -19,7 +19,10 @@ class ClearField extends Controller {
     public function removeAll($params) {
         $gameId = $params[0];
         $playerCode = $params[1];
-        //ПРОВЕРКА!!!
+        if (!$this->getGameInfo($gameId, $playerCode)) {
+            JsonHelper::successFalse('Wrong parameters');
+            return;
+        }
         $this->modelWarships->clearField($gameId, $playerCode);
         JsonHelper::successTrue();
     }

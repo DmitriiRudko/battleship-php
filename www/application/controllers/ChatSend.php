@@ -21,6 +21,10 @@ class ChatSend extends Controller {
     public function sendMessage($params) {
         $gameId = $params[0];
         $playerCode = $params[1];
+        if (!$this->getGameInfo($gameId, $playerCode)) {
+            JsonHelper::successFalse('Wrong parameters');
+            return;
+        }
         $message = mb_strimwidth($_POST['message'], 0, self::MESSAGE_MAX_LEN);
         $this->modelMessages->sendMessage($gameId, $playerCode, $message);
         JsonHelper::successTrue();

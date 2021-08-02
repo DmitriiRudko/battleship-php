@@ -3,9 +3,11 @@
 namespace Application\Controllers;
 require_once(dirname(__FILE__) . "/../core/Controller.php");
 require_once(dirname(__FILE__) . "/../model/ModelMessages.php");
+require_once(dirname(__FILE__) . "/../helpers/JsonHelper.php");
 
 use Application\Core\Controller;
 use Application\Model\ModelMessages;
+use Application\Helpers\JsonHelper;
 
 class ChatLoad extends Controller {
     private $modelMessages;
@@ -19,10 +21,13 @@ class ChatLoad extends Controller {
     public function loadMessages($params) {
         $gameId = $params[0];
         $playerCode = $params[1];
-
-
-        //ПРОВЕРКА ЧЕРЕЗ game-status
-
+        if (!$this->getGameInfo($gameId, $playerCode)) {
+            JsonHelper::successFalse('Wrong parameters');
+            return;
+        }        if (!$this->getGameInfo($gameId, $playerCode)) {
+            JsonHelper::successFalse('Wrong parameters');
+            return;
+        }
 
         isset($_GET['lastTime']) ? $lastTime = (int)$_GET['lastTime'] : $lastTime = time();
         $messagesRaw = $this->modelMessages->loadMessages($gameId, $lastTime - self::OFFSET_SEC, $lastTime);
@@ -38,6 +43,6 @@ class ChatLoad extends Controller {
             'lastTime' => $lastTime - self::OFFSET_SEC,
             'success' => True,
         ];
-        print_r(json_encode($messagesPretty));
+        JsonHelper::jsonifyAndSend($messagesPretty);
     }
 }

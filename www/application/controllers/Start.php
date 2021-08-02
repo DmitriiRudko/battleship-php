@@ -13,6 +13,7 @@ use Application\Helpers\JsonHelper;
 
 class Start extends Controller {
     private $modelGames;
+
     private $modelUsers;
 
     public function __construct() {

@@ -49,65 +49,61 @@ class ModelGames extends Model {
         return $result['status'];
     }
 
-    public function setGameStatus($gameId, $status) {
-        $sql = "UPDATE `game`
-                SET `status` = :status
-                WHERE `id` = :id";
-        $params = [
-            'id' => $gameId,
-            'status' => $status,
-        ];
-        $this->db->produceStatement($sql, $params);
-    }
-
     public function getEnemy($gameId, $playerCode) {
-        $sql = "SELECT `id`, `code` 
-                FROM `users` 
-                WHERE `code` = :code;";
-        $params = [
-            'code' => $playerCode,
-        ];
-        $player = $this->db->getOne($sql, $params);
-
-        $sql = "SELECT CASE 
-                WHEN  `initiator_id` = :id_ THEN `invited_id` 
-                WHEN  `invited_id` = :id THEN `initiator_id` 
-                END AS `enemy_id`
-                FROM `games` 
-                WHERE `id` = :gameId;";
-        $params = [
-            'id_' => $player['id'],  // PDO - самая тупая хуйня из всех, что только создовал homo sapiens.
-            'id' => $player['id'],  // используя один параметр дважды (73, 74) мы вызываем ошибку wrong parameter number
-            'gameId' => $gameId,  // можно, конечно, включить режим эмуляции, но тогда придется вручную привязывать все
-        ];                        // не строковые переменные через bind, так что, ну его нахуй.
-        $enemyId = $this->db->getOne($sql, $params)['enemy_id'];
-        $sql = "SELECT `id`, `code` 
-                FROM `users` 
-                WHERE `id` = :id;";
-        $params = [
-            'id' => $enemyId,
-        ];
-        $enemy = $this->db->getOne($sql, $params);
-        return $enemy;
+        $gameInfo = $this->getGameInfo($gameId);
+        switch ($playerCode) {
+            case $gameInfo['invited']['id']:
+                return $gameInfo['initiator'];
+            case $gameInfo['initiator']['id']:
+                return $gameInfo['invited'];
+        }
     }
 
     public function whoIsNext($gameId) {
-        $sql = "SELECT `turn` 
-                FROM `games` 
-                WHERE `id` = :gameId;";
-        $params = [
-            'gameId' => $gameId,
-        ];
-        $playerId = $this->db->getOne($sql, $params)['turn'];
+        $gameInfo = $this->getGameInfo($gameId);
+        switch ($gameInfo['next']) {
+            case $gameInfo['invited']['id']:
+                return $gameInfo['invited'];
+            case $gameInfo['initiator']['id']:
+                return $gameInfo['initiator'];
+        }
+    }
 
-        $sql = "SELECT `id`, `code` 
-                FROM `users` 
-                WHERE `id` = :id;";
+    public function getInvited($gameId) {
+        $gameInfo = $this->getGameInfo($gameId);
+        return $gameInfo['invited'];
+    }
+
+    public function getGameInfo($gameId) {
+        $sql = "SELECT *
+                FROM `games`
+                WHERE `id` = :id";
         $params = [
-            'id' => $playerId,
+            'id' => $gameId,
         ];
-        $playerInfo = $this->db->getOne($sql, $params);
-        return $playerInfo;
+        $gameInfo = $this->db->getOne($sql, $params);
+        $sql = "SELECT *
+                FROM `users`
+                WHERE `id` = :initiatorId OR
+                `id` = :invitedId";
+        $params = [
+            'initiatorId' => $gameInfo['initiator_id'],
+            'invitedId' => $gameInfo['invited_id'],
+        ];
+        $usersInfo = $this->db->getMany($sql, $params);
+        if ($gameInfo['initiator_id'] == $usersInfo[0]['id']) {
+            $gameInfo = array_merge($gameInfo, [
+                'initiator' => $usersInfo[0],
+                'invited' => $usersInfo[1]
+            ]);
+        } else {
+            $gameInfo = array_merge($gameInfo, [
+                'initiator' => $usersInfo[1],
+                'invited' => $usersInfo[0]
+            ]);
+        }
+        unset($gameInfo['initiator_id'], $gameInfo['invited_id']);
+        return $gameInfo;
     }
 
     public function enemysTurn($gameId) {
@@ -120,4 +116,16 @@ class ModelGames extends Model {
         ];
         $this->db->produceStatement($sql, $params)['turn'];
     }
+
+    public function setGameStatus($gameId, $status) {
+        $sql = "UPDATE `game`
+                SET `status` = :status
+                WHERE `id` = :id";
+        $params = [
+            'id' => $gameId,
+            'status' => $status,
+        ];
+        $this->db->produceStatement($sql, $params);
+    }
+
 }

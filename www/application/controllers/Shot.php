@@ -22,6 +22,8 @@ class Shot extends Controller {
 
     private $modelSteps;
 
+    private const GAME_HAS_NOT_BEGUN_STATUS = 1;
+
     private const GAME_HAS_BEGUN_STATUS = 2;
 
     private const GAME_OVER_STATUS = 3;
@@ -35,14 +37,23 @@ class Shot extends Controller {
     public function shot($params) {
         $gameId = $params[0];
         $playerCode = $params[1];
-        if ($this->modelGames->getGameStatus($gameId) != self::GAME_HAS_BEGUN_STATUS) {
-            JsonHelper::successFalse();
-            return;
+
+        $gameInfo = $this->getGameInfo($gameId, $playerCode);
+
+        if ($gameInfo['status'] != self::GAME_HAS_BEGUN_STATUS) {
+            switch ($gameInfo['status']) {
+                case self::GAME_HAS_NOT_BEGUN_STATUS:
+                    JsonHelper::successFalse('Game has not begun yet');
+                    return;
+                case self::GAME_OVER_STATUS:
+                    JsonHelper::successFalse('Game is already over');
+                    return;
+            }
         }
 
         $nextWhoGoes = $this->modelGames->whoIsNext($gameId);
         if ($nextWhoGoes['code'] != $playerCode) {
-            JsonHelper::successFalse();
+            JsonHelper::successFalse('This is not your turn');
             return;
         }
 
@@ -52,7 +63,7 @@ class Shot extends Controller {
         $field = new FieldHelper($warships, $steps);
         extract($_POST);
         if (!$field->isPossibleToShoot($x, $y)) {
-            JsonHelper::successFalse();
+            JsonHelper::successFalse('You have already shot here');
             return;
         }
 
@@ -60,7 +71,7 @@ class Shot extends Controller {
         $this->modelSteps->shoot($gameId, $playerCode, $x, $y);
 
         if ($result) {
-            if($field->isOver()){
+            if ($field->isOver()) {
                 $this->modelGames->setGameStatus($gameId, self::GAME_OVER_STATUS);
             }
         } else {

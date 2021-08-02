@@ -33,41 +33,33 @@ class Ready extends Controller {
     public function userReady($params) {
         $gameId = $params[0];
         $playerCode = $params[1];
-        $userId = $this->modelUsers->getUserId($playerCode);
-        if (!isset($userId)) {
-            JsonHelper::successFalse();
+        $gameInfo = $this->getGameInfo($gameId, $playerCode);
+
+        if (!$gameInfo) {
+            JsonHelper::successFalse('Wrong parameters');
             return;
         }
-
-        $ids = $this->modelGames->getPlayersIds($gameId);
-        if (!isset($ids)) {
-            JsonHelper::successFalse();
-            return;
-        }
-
         $playerShips = $this->modelWarships->getPlayerWarships($gameId, $playerCode);
-        if (count($playerShips) != self::SHIPS_AMOUNT) {
-            JsonHelper::successFalse();
-            return;
-        }
 
-        $this->modelUsers->userReady($userId);
-
-        switch ($userId) {
-            case $ids['initiator_id']:
-                $enemyStatus = $this->modelUsers->isReady($ids['invited_id']);
+        switch ($playerCode) {
+            case $gameInfo['initiator']['code']:
+                $userId = $gameInfo['initiator']['id'];
+                $this->modelUsers->userReady($userId);
+                $enemyStatus = $gameInfo['invited']['ready'];
                 break;
-            case $ids['invited_id']:
-                $enemyStatus = $this->modelUsers->isReady($ids['initiator_id']);
+            case $gameInfo['invited']['code']:
+                $userId = $gameInfo['invited']['id'];
+                $this->modelUsers->userReady($userId);
+                $enemyStatus = $gameInfo['initiator']['ready'];
                 break;
         }
 
-        if($enemyStatus){
+        if ($enemyStatus) {
             $this->modelGames->setGameStatus($gameId, self::GAME_HAS_BEGUN_STATUS);
         }
 
         $response = [
-            'enemyReady' => $enemyStatus,
+            'enemyReady' => (bool)$enemyStatus,
             'success' => True,
         ];
 

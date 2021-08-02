@@ -8,6 +8,7 @@ require_once(dirname(__FILE__) . "/../controllers/ChatLoad.php");
 require_once(dirname(__FILE__) . "/../controllers/ChatSend.php");
 require_once(dirname(__FILE__) . "/../controllers/ClearField.php");
 require_once(dirname(__FILE__) . "/../controllers/Shot.php");
+require_once(dirname(__FILE__) . "/../controllers/Status.php");
 
 use Application\Controllers\Start;
 use Application\Controllers\Ready;
@@ -16,6 +17,7 @@ use Application\Controllers\ChatLoad;
 use Application\Controllers\ChatSend;
 use Application\Controllers\ClearField;
 use Application\Controllers\Shot;
+use Application\Controllers\Status;
 use Exception;
 
 class Router {
@@ -28,6 +30,7 @@ class Router {
             'chat-send' => [ChatSend::class, 'sendMessage'],
             'clear-field' => [ClearField::class, 'removeAll'],
             'shot' => [Shot::class, 'shot'],
+            'status' => [Status::class, 'gameInfo'],
         ]
     ];
 
