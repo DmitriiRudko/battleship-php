@@ -1,7 +1,7 @@
 <?php
 
 namespace Application\Model;
-require_once(dirname(__FILE__) . "/../Core/Model.php");
+require_once(dirname(__FILE__) . "/../сore/Model.php");
 
 use Application\Core\Model;
 
