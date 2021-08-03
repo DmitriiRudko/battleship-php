@@ -67,6 +67,8 @@ class Status extends Controller {
                 return $ship['size'] . '-' . $ship['number'];
             }, $myShips);
             $fieldsInfo = $this->fieldHelper::getFieldsInfo($myShips, $enemyShips, $mySteps, $enemySteps);
+            $info['fieldMy'] = self::transpose($info['fieldMy']);
+            $info['fieldEnemy'] = self::transpose($info['fieldEnemy']);
             $info = array_merge($info, $fieldsInfo);
             $info = array_merge($info, ['usedPlaces' => $usedPlaces,]);
         }
@@ -75,5 +77,10 @@ class Status extends Controller {
         ]);
 
         JsonHelper::jsonifyAndSend($info);
+    }
+
+    private static function transpose($array) {
+        array_unshift($array, null);
+        return call_user_func_array('array_map', $array);
     }
 }
