@@ -36,7 +36,17 @@ class PlaceShip extends Controller {
         if (isset($_POST['ships'])) {
             $this->placeMany($gameId, $gameInfo['me']['id']);
         } elseif (isset($_POST['x'], $_POST['y'])) {
-            $this->placeOne($gameId, $gameInfo['me']['id']);
+            $placedShips = $this->modelWarships->getPlayerWarships($gameId, $gameInfo['me']['id']);
+            $sameShips = array_filter($placedShips, function ($ship) {
+                return $ship['ship'] === ($_POST['size'] . '-' . $_POST['number'])
+                    && $ship['x'] === $_POST['x']
+                    && $ship['y'] === $_POST['y'];
+            });
+            if (!empty($sameShips)) {
+                $this->turn($gameId, $gameInfo['me']['id']);
+            } else {
+                $this->placeOne($gameId, $gameInfo['me']['id']);
+            }
         } else {
             $this->removeOne($gameId, $gameInfo['me']['id']);
         }
@@ -45,7 +55,6 @@ class PlaceShip extends Controller {
     public function placeOne(int $gameId, int $playerId): void {
         $placedShips = $this->modelWarships->getPlayerWarships($gameId, $playerId);
         $field = new FieldHelper($placedShips);
-
         extract($_POST);
         $size = explode('-', $ship)[0];
         $number = explode('-', $ship)[1];
@@ -89,5 +98,23 @@ class PlaceShip extends Controller {
         $this->modelWarships->removeShip($gameId, $playerId, $size, $number);
 
         JsonHelper::successTrue();
+    }
+
+    public function turn(int $gameId, int $playerId): void {
+        extract($_POST);
+        $size = explode('-', $ship)[0];
+        $number = explode('-', $ship)[1];
+
+        $this->modelWarships->removeShip($gameId, $playerId, $size, $number);
+        switch ($_POST['orientation']) {
+            case 'vertical':
+                $_POST['orientation'] = 'horizontal';
+                break;
+            case 'horizontal':
+                $_POST['orientation'] = 'vertical';
+                break;
+        }
+
+        $this->placeOne($gameId, $playerId);
     }
 }
