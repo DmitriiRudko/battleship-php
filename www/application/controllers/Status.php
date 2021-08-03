@@ -67,8 +67,8 @@ class Status extends Controller {
                 return $ship['size'] . '-' . $ship['number'];
             }, $myShips);
             $fieldsInfo = $this->fieldHelper::getFieldsInfo($myShips, $enemyShips, $mySteps, $enemySteps);
-            $info['fieldMy'] = self::transpose($info['fieldMy']);
-            $info['fieldEnemy'] = self::transpose($info['fieldEnemy']);
+            $fieldsInfo['fieldMy'] = self::transpose($fieldsInfo['fieldMy']);
+            $fieldsInfo['fieldEnemy'] = self::transpose($fieldsInfo['fieldEnemy']);
             $info = array_merge($info, $fieldsInfo);
             $info = array_merge($info, ['usedPlaces' => $usedPlaces,]);
         }
