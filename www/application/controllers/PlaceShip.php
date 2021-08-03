@@ -38,12 +38,12 @@ class PlaceShip extends Controller {
         } elseif (isset($_POST['x'], $_POST['y'])) {
             $placedShips = $this->modelWarships->getPlayerWarships($gameId, $gameInfo['me']['id']);
             $sameShips = array_filter($placedShips, function ($ship) {
-                return $ship['ship'] === ($_POST['size'] . '-' . $_POST['number'])
-                    && $ship['x'] === $_POST['x']
-                    && $ship['y'] === $_POST['y'];
+                return $_POST['ship'] === ($ship['size'] . '-' . $ship['number'])
+                    && $ship['x'] === (int)$_POST['x']
+                    && $ship['y'] === (int)$_POST['y'];
             });
             if (!empty($sameShips)) {
-                $this->turn($gameId, $gameInfo['me']['id']);
+                $this->turn($gameId, $gameInfo['me']['id'], $sameShips[0]['orientation']);
             } else {
                 $this->placeOne($gameId, $gameInfo['me']['id']);
             }
@@ -100,18 +100,18 @@ class PlaceShip extends Controller {
         JsonHelper::successTrue();
     }
 
-    public function turn(int $gameId, int $playerId): void {
+    public function turn(int $gameId, int $playerId, string $orientation): void {
         extract($_POST);
         $size = explode('-', $ship)[0];
         $number = explode('-', $ship)[1];
 
         $this->modelWarships->removeShip($gameId, $playerId, $size, $number);
-        switch ($_POST['orientation']) {
+        switch ($orientation) {
             case 'vertical':
-                $_POST['orientation'] = 'horizontal';
+                $_POST = array_merge($_POST, ['orientation' => 'horizontal']);
                 break;
             case 'horizontal':
-                $_POST['orientation'] = 'vertical';
+                $_POST = array_merge($_POST, ['orientation' => 'vertical']);
                 break;
         }
 
