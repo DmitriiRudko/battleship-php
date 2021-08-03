@@ -35,7 +35,7 @@ class ModelGames extends Model {
         return $result;
     }
 
-    public function getEnemy(int $gameId, int $playerCode): array {
+    public function getEnemy(int $gameId, string $playerCode): array {
         $gameInfo = $this->getGameInfo($gameId);
         switch ($playerCode) {
             case $gameInfo['invited']['code']:
