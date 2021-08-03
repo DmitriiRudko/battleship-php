@@ -196,6 +196,6 @@ class FieldHelper {
             $carry += $item['health'];
             return $carry;
         }, 0);
-        return !(bool)$result;
+        return $result == 1;
     }
 }
