@@ -102,7 +102,7 @@ class ModelGames extends Model {
     }
 
     public function setGameStatus($gameId, $status) {
-        $sql = "UPDATE `game`
+        $sql = "UPDATE `games`
                 SET `status` = :status
                 WHERE `id` = :id";
         $params = [
