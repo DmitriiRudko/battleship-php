@@ -56,13 +56,13 @@ class Shot extends Controller {
         $warships = $this->modelWarships->getPlayerWarships($gameId, $enemy['id']);
         $field = new FieldHelper($warships, $steps);
         extract($_POST);
-        if (!$field->isPossibleToShoot($x, $y)) {
+        if (!$field->isPossibleToShoot($y, $x)) {
             JsonHelper::successFalse('You have already shot here');
             return;
         }
 
-        $result = $field->shoot($x, $y);
-        $this->modelSteps->shoot($gameId, $gameInfo['me']['id'], $x, $y);
+        $result = $field->shoot($y, $x);
+        $this->modelSteps->shoot($gameId, $gameInfo['me']['id'], $y, $x);
 
         if ($result) {
             if ($field->isOver()) {
