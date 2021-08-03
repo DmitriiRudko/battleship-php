@@ -166,7 +166,8 @@ class FieldHelper {
         for ($i = 0; $i < 10; $i++)
             for ($j = 0; $j < 10; $j++) {
                 if ($field->fieldShips[$i][$j])
-                    $myField[$i][$j][0] = $field->fieldShips[$i][$j]['size'] . '-' . $field->fieldShips[$i][$j]['number'];
+                    $myField[$i][$j][0] = $field->fieldShoots[$i][$j] ?
+                        $field->fieldShips[$i][$j]['size'] . '-' . $field->fieldShips[$i][$j]['number'] : 'hidden';
                 if ($field->fieldShoots[$i][$j])
                     $myField[$i][$j][1] = $field->fieldShoots[$i][$j];
             }
@@ -181,7 +182,8 @@ class FieldHelper {
         for ($i = 0; $i < 10; $i++)
             for ($j = 0; $j < 10; $j++) {
                 if ($field->fieldShips[$i][$j])
-                    $enemyField[$i][$j][0] = $field->fieldShips[$i][$j]['size'] . '-' . $field->fieldShips[$i][$j]['number'];
+                    $enemyField[$i][$j][0] = $field->fieldShoots[$i][$j] ?
+                        $field->fieldShips[$i][$j]['size'] . '-' . $field->fieldShips[$i][$j]['number'] : 'hidden';
                 if ($field->fieldShoots[$i][$j])
                     $enemyField[$i][$j][1] = $field->fieldShoots[$i][$j];
             }
