@@ -57,13 +57,13 @@ class Shot extends Controller {
         $field = new FieldHelper($warships, $steps);
 
         extract($_POST);
-        if (!$field->isPossibleToShoot($y, $x)) {
+        if (!$field->isPossibleToShoot($x, $y)) {
             JsonHelper::successFalse('You have already shot here');
             return;
         }
 
-        $result = $field->shoot($y, $x);
-        $this->modelSteps->shoot($gameId, $gameInfo['me']['id'], $y, $x);
+        $result = $field->shoot($x, $y);
+        $this->modelSteps->shoot($gameId, $gameInfo['me']['id'], $x, $y);
 
         if ($result) {
             if ($field->isOver()) {

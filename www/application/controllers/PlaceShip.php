@@ -50,10 +50,10 @@ class PlaceShip extends Controller {
         $size = explode('-', $ship)[0];
         $number = explode('-', $ship)[1];
 
-        if (!$field->isPossibleToPlace($size, $number, $orientation, $y, $x)) {
+        if (!$field->isPossibleToPlace($size, $number, $orientation, $x, $y)) {
             JsonHelper::successFalse('Ship is impossible to place in this position');
         } else {
-            $this->modelWarships->placeShip($gameId, $playerId, $size, $y, $x, $orientation, $number);
+            $this->modelWarships->placeShip($gameId, $playerId, $size, $x, $y, $orientation, $number);
             JsonHelper::successTrue();
         }
     }
