@@ -85,7 +85,9 @@ class PlaceShip extends Controller {
         extract($_POST);
         $size = explode('-', $ship)[0];
         $number = explode('-', $ship)[1];
+
         $this->modelWarships->removeShip($gameId, $playerId, $size, $number);
+
         JsonHelper::successTrue();
     }
 }

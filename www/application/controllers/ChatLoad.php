@@ -19,6 +19,7 @@ class ChatLoad extends Controller {
     public function loadMessages(array $params): void {
         $gameId = $params[0];
         $playerCode = $params[1];
+
         if (!$this->getGameInfo($gameId, $playerCode)) {
             JsonHelper::successFalse('Wrong parameters');
             return;

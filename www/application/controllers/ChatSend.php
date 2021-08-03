@@ -19,6 +19,7 @@ class ChatSend extends Controller {
         $gameId = $params[0];
         $playerCode = $params[1];
         $gameInfo = $this->getGameInfo($gameId, $playerCode);
+
         if (!$gameInfo) {
             JsonHelper::successFalse('Wrong parameters');
             return;

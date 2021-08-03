@@ -55,6 +55,7 @@ class Shot extends Controller {
         $enemy = $this->modelGames->getEnemy($gameId, $gameInfo['me']['code']);
         $warships = $this->modelWarships->getPlayerWarships($gameId, $enemy['id']);
         $field = new FieldHelper($warships, $steps);
+
         extract($_POST);
         if (!$field->isPossibleToShoot($y, $x)) {
             JsonHelper::successFalse('You have already shot here');
@@ -71,6 +72,7 @@ class Shot extends Controller {
         } else {
             $this->modelGames->enemysTurn($gameId);
         }
+
         JsonHelper::successTrue();
     }
 }

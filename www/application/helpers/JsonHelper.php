@@ -5,7 +5,7 @@ namespace Application\Helpers;
 class JsonHelper {
     public static function jsonifyAndSend($data) {
         header('Content-Type: application/json');
-//        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Origin: *');
 //        header('Access-Control-Allow-Methods: GET, POST');
 //        header("Access-Control-Allow-Headers: X-Requested-With");
         $json = json_encode($data);
@@ -21,7 +21,7 @@ class JsonHelper {
 
     public static function successFalse(string $message = 'Smth went wrong', int $code = 400): void {
         header('Content-Type: application/json');
-//        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Origin: *');
 //        header('Access-Control-Allow-Methods: GET, POST');
 //        header("Access-Control-Allow-Headers: X-Requested-With");
         http_response_code($code);
@@ -35,7 +35,7 @@ class JsonHelper {
 
     public static function successTrue(): void {
         header("Content-Type: application/json");
-//        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Origin: *');
 //        header('Access-Control-Allow-Methods: GET, POST');
 //        header("Access-Control-Allow-Headers: X-Requested-With");
         http_response_code(200);

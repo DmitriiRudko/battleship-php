@@ -25,11 +25,13 @@ class Start extends Controller {
         $initiator = $this->modelUsers->newUser();
         $invited = $this->modelUsers->newUser();
         $game = $this->modelGames->newGame($initiator['id'], $invited['id']);
+
         $result = array_merge($game, [
             'code' => $initiator['code'],
             'invite' => $invited['code'],
             'success' => true,
         ]);
+
         JsonHelper::jsonifyAndSend($result);
     }
 }
