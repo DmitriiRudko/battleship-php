@@ -2,6 +2,7 @@
 
 namespace Application\Model;
 require_once(dirname(__FILE__) . "/../core/Model.php");
+
 //require_once ('./application/core/Model.php');
 use Application\Core\Model;
 
@@ -17,7 +18,7 @@ class ModelGames extends Model {
         parent::__construct();
     }
 
-    public function newGame($initiatorId, $invitedId): array {
+    public function newGame(int $initiatorId, int $invitedId): array {
         $sql = "INSERT INTO games (`initiator_id`, `invited_id`, `turn`)
                 VALUES (:initiator, :invited, :turn)";
         $turn = random_int(0, 1);
@@ -34,7 +35,7 @@ class ModelGames extends Model {
         return $result;
     }
 
-    public function getEnemy($gameId, $playerCode) {
+    public function getEnemy(int $gameId, int $playerCode): array {
         $gameInfo = $this->getGameInfo($gameId);
         switch ($playerCode) {
             case $gameInfo['invited']['code']:
@@ -42,11 +43,11 @@ class ModelGames extends Model {
             case $gameInfo['initiator']['code']:
                 return $gameInfo['invited'];
             default:
-                return null;
+                return [];
         }
     }
 
-    public function whoIsNext($gameId) {
+    public function whoIsNext(int $gameId): array {
         $gameInfo = $this->getGameInfo($gameId);
         switch ($gameInfo['next']) {
             case $gameInfo['invited']['id']:
@@ -54,11 +55,11 @@ class ModelGames extends Model {
             case $gameInfo['initiator']['id']:
                 return $gameInfo['initiator'];
             default:
-                return null;
+                return [];
         }
     }
 
-    public function getGameInfo($gameId): array {
+    public function getGameInfo(int $gameId): array {
         $sql = "SELECT *
                 FROM `games`
                 WHERE `id` = :id";
@@ -90,7 +91,7 @@ class ModelGames extends Model {
         return $gameInfo;
     }
 
-    public function enemysTurn($gameId) {
+    public function enemysTurn(int $gameId): void {
         $sql = "UPDATE `games` SET `turn` = CASE 
                 WHEN `turn` = `initiator_id` THEN `invited_id` 
                 WHEN `turn` = `invited_id` THEN `initiator_id`
