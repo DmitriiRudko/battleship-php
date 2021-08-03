@@ -63,9 +63,12 @@ class Status extends Controller {
             $enemyShips = $this->modelWarships->getPlayerWarships($gameId, $enemy['id']);
             $mySteps = $this->modelSteps->getPlayerSteps($gameId, $gameInfo['me']['id']);
             $enemySteps = $this->modelSteps->getPlayerSteps($gameId, $enemy['id']);
-
+            $usedPlaces = array_map(function ($ship) {
+                return $ship['size'] . '-' . $ship['number'];
+            }, $myShips);
             $fieldsInfo = $this->fieldHelper::getFieldsInfo($myShips, $enemyShips, $mySteps, $enemySteps);
             $info = array_merge($info, $fieldsInfo);
+            $info = array_merge($info, ['usedPlaces' => $fieldsInfo,]);
         }
         $info = array_merge_recursive($info, [
             'success' => true,
