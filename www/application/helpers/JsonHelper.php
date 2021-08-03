@@ -30,6 +30,6 @@ class JsonHelper {
     public static function successTrue(): void {
         header("Content-Type: application/json");
         http_response_code(200);
-        echo '{"success":True}';
+        echo '{"success":true}';
     }
 }

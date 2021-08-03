@@ -43,7 +43,7 @@ class Router {
         $handler = self::$routes;
         while (count($url)) {
             $segment = $url[0];
-            if ($handler[$segment]) {
+            if (isset($handler[$segment])) {
                 array_shift($url);
                 $handler = $handler[$segment];
             } else break;

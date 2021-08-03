@@ -57,9 +57,9 @@ class Status extends Controller {
             $info['game'] = array_merge($info['game'], [
                 'meReady' => $this->modelUsers->isReady($this->modelUsers->getUserId($playerCode)),
             ]);
-        if (!$params['short']) {
+        if (!isset($params['short'])) {
             $enemy = $this->modelGames->getEnemy($gameId, $playerCode);
-            $myShips = $this->modelWarships->getPlayerWarships($gameId, $enemy['id']);
+            $myShips = $this->modelWarships->getPlayerWarships($gameId, $gameInfo['me']['id']);
             $enemyShips = $this->modelWarships->getPlayerWarships($gameId, $enemy['id']);
             $mySteps = $this->modelSteps->getPlayerSteps($gameId, $gameInfo['me']['id']);
             $enemySteps = $this->modelSteps->getPlayerSteps($gameId, $enemy['id']);

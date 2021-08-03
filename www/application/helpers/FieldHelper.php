@@ -131,25 +131,25 @@ class FieldHelper {
         }
 
         $this->fieldShoots[$y][$x] = 1;
-        if ($this->fieldShips[$y][$x]) {
+        if (isset($this->fieldShips[$y][$x])) {
             $this->fieldShips[$y][$x]['health']--;
-        }
-        if (!$this->fieldShips[$y][$x]['health']) {
-            switch ($this->fieldShips[$y][$x]['orientation']) {
-                case 'vertical':
-                    for ($i = $y - 1; $i <= $y + $this->fieldShips[$y][$x]['size']; $i++) {
-                        $i >= 0 && $x > 0 ? $this->fieldShoots[$i][$x - 1] = 1 : null;
-                        $i >= 0 ? $this->fieldShoots[$i][$x] = 1 : null;
-                        $x <= 9 ? $this->fieldShoots[$i][$x + 1] = 1 : null;
-                    }
-                    break;
-                case 'horizontal':
-                    for ($j = $x - 1; $j <= $x + $this->fieldShips[$y][$x]['size']; $j++) {
-                        $j >= 0 && $y > 0 ? $this->fieldShoots[$y - 1][$j] = 1 : null;
-                        $j >= 0 ? $this->fieldShoots[$y][$j] = 1 : null;
-                        $y <= 9 ? $this->fieldShoots[$y + 1][$j] = 1 : null;
-                    }
-                    break;
+            if (!$this->fieldShips[$y][$x]['health']) {
+                switch ($this->fieldShips[$y][$x]['orientation']) {
+                    case 'vertical':
+                        for ($i = $y - 1; $i <= $y + $this->fieldShips[$y][$x]['size']; $i++) {
+                            $i >= 0 && $x > 0 ? $this->fieldShoots[$i][$x - 1] = 1 : null;
+                            $i >= 0 ? $this->fieldShoots[$i][$x] = 1 : null;
+                            $x <= 9 ? $this->fieldShoots[$i][$x + 1] = 1 : null;
+                        }
+                        break;
+                    case 'horizontal':
+                        for ($j = $x - 1; $j <= $x + $this->fieldShips[$y][$x]['size']; $j++) {
+                            $j >= 0 && $y > 0 ? $this->fieldShoots[$y - 1][$j] = 1 : null;
+                            $j >= 0 ? $this->fieldShoots[$y][$j] = 1 : null;
+                            $y <= 9 ? $this->fieldShoots[$y + 1][$j] = 1 : null;
+                        }
+                        break;
+                }
             }
         }
         return (bool)$this->fieldShips[$y][$x];
