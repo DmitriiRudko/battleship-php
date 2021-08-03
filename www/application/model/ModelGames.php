@@ -34,12 +34,12 @@ class ModelGames extends Model {
         return $result;
     }
 
-    public function getEnemy($gameId, $playerCode) {
+    public function getEnemy($gameId, $playerId) {
         $gameInfo = $this->getGameInfo($gameId);
-        switch ($playerCode) {
-            case $gameInfo['invited']['code']:
+        switch ($playerId) {
+            case $gameInfo['invited']['id']:
                 return $gameInfo['initiator'];
-            case $gameInfo['initiator']['code']:
+            case $gameInfo['initiator']['id']:
                 return $gameInfo['invited'];
             default:
                 return null;
