@@ -68,7 +68,7 @@ class Status extends Controller {
             }, $myShips);
             $fieldsInfo = $this->fieldHelper::getFieldsInfo($myShips, $enemyShips, $mySteps, $enemySteps);
             $info = array_merge($info, $fieldsInfo);
-            $info = array_merge($info, ['usedPlaces' => $fieldsInfo,]);
+            $info = array_merge($info, ['usedPlaces' => $usedPlaces,]);
         }
         $info = array_merge_recursive($info, [
             'success' => true,
