@@ -52,7 +52,7 @@ class Shot extends Controller {
         }
 
         $steps = $this->modelSteps->getPlayerSteps($gameId, $gameInfo['me']['id']);
-        $enemy = $this->modelGames->getEnemy($gameId, $gameInfo['me']['id']);
+        $enemy = $this->modelGames->getEnemy($gameId, $gameInfo['me']['code']);
         $warships = $this->modelWarships->getPlayerWarships($gameId, $enemy['id']);
         $field = new FieldHelper($warships, $steps);
         extract($_POST);
