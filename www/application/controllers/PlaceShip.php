@@ -64,8 +64,8 @@ class PlaceShip extends Controller {
         $ships = json_decode($_POST['ships']);
 
         foreach ($ships as $ship) {
-            $size = explode('-', $ship->shipType)[0];
-            $number = explode('-', $ship->shipType)[1];
+            $size = explode('-', $ship->ship)[0];
+            $number = explode('-', $ship->ship)[1];
             if (!$field->isPossibleToPlace($size, $number, $ship->orientation, $ship->x, $ship->y)) {
                 JsonHelper::successFalse('Some ships are impossible to place');
                 return;
