@@ -31,7 +31,7 @@ class JsonHelper {
 
     public static function successTrue(): void {
         header("Content-Type: application/json");
-        header('Access-Control-Allow-Origin: *');
+      //  header('Access-Control-Allow-Origin: *');
 
         http_response_code(200);
         echo '{"success":true}';
