@@ -51,9 +51,11 @@ class Router {
 
         extract($handler);
 
-        if (method_exists('\Application\Controllers\Sot' . $controllerName, $method)){
-            $controller = new $controllerName();
-            $controller->$method($url);
+        if (isset($controllerName, $method)) {
+            if (method_exists('\Application\Controllers\Sot' . $controllerName, $method)) {
+                $controller = new $controllerName();
+                $controller->$method($url);
+            }
         } else {
             NotFound::notFound();
         }
