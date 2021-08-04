@@ -52,7 +52,7 @@ class Router {
         extract($handler);
 
         if (isset($controllerName, $method)) {
-            if (method_exists('\Application\Controllers\Sot' . $controllerName, $method)) {
+            if (method_exists( $controllerName, $method)) {
                 $controller = new $controllerName();
                 $controller->$method($url);
             }
