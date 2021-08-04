@@ -22,13 +22,14 @@ class PlaceShip extends Controller {
     public function placeShip(array $params): void {
         $gameId = $params[0];
         $playerCode = $params[1];
-
         $gameInfo = $this->getGameInfo($gameId, $playerCode);
+
         if (!$gameInfo) {
             JsonHelper::successFalse('Wrong parameters');
             return;
         }
-        if ($gameInfo['status'] != ModelGames::GAME_HAS_NOT_BEGUN_STATUS) {
+
+        if ((int)$gameInfo['status'] !== ModelGames::GAME_HAS_NOT_BEGUN_STATUS) {
             JsonHelper::successFalse('Game has already begun');
             return;
         }
@@ -42,11 +43,13 @@ class PlaceShip extends Controller {
                     && $ship['x'] === (int)$_POST['x']
                     && $ship['y'] === (int)$_POST['y'];
             });
+
             if (!empty($sameShips)) {
                 $this->turn($gameId, $gameInfo['me']['id'], $sameShips[0]['orientation']);
             } else {
                 $this->placeOne($gameId, $gameInfo['me']['id']);
             }
+
         } else {
             $this->removeOne($gameId, $gameInfo['me']['id']);
         }

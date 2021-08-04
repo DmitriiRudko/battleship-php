@@ -34,7 +34,7 @@ class Shot extends Controller {
 
         $gameInfo = $this->getGameInfo($gameId, $playerCode);
 
-        if ($gameInfo['status'] != ModelGames::GAME_HAS_BEGUN_STATUS) {
+        if ((int)$gameInfo['status'] !== ModelGames::GAME_HAS_BEGUN_STATUS) {
             switch ($gameInfo['status']) {
                 case ModelGames::GAME_HAS_NOT_BEGUN_STATUS:
                     JsonHelper::successFalse('Game has not begun yet');
@@ -46,7 +46,7 @@ class Shot extends Controller {
             return;
         }
 
-        if ($gameInfo['turn'] != $gameInfo['me']['id']) {
+        if ((int)$gameInfo['turn'] !== (int)$gameInfo['me']['id']) {
             JsonHelper::successFalse('This is not your turn');
             return;
         }

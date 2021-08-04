@@ -17,11 +17,14 @@ class ModelUsers extends Model {
         $params = [
             'code' => $userCode,
         ];
+
         $this->db->produceStatement($sql, $params);
+
         $result = [
             'id' => $this->db->lastInsertedId(),
             'code' => $userCode,
         ];
+
         return $result;
     }
 
@@ -32,6 +35,7 @@ class ModelUsers extends Model {
         $params = [
             'id' => $userId,
         ];
+
         $this->db->produceStatement($sql, $params);
     }
 
@@ -42,7 +46,9 @@ class ModelUsers extends Model {
         $params = [
             'code' => $userCode,
         ];
+
         $id = $this->db->getOne($sql, $params);
+
         return $id['id'];
     }
 
@@ -53,7 +59,9 @@ class ModelUsers extends Model {
         $params = [
             'id' => $userId,
         ];
+
         $status = $this->db->getOne($sql, $params);
+
         return (bool) $status['ready'];
     }
 }

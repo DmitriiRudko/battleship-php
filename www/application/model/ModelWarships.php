@@ -16,7 +16,9 @@ class ModelWarships extends Model {
             'gameId' => $gameId,
             'userId' => $playerId,
         ];
+
         $warships = $this->db->getMany($sql, $params);
+
         return $warships;
     }
 
@@ -32,6 +34,7 @@ class ModelWarships extends Model {
             'orientation' => $orientation,
             'number' => $number,
         ];
+
         $this->db->produceStatement($sql, $params);
     }
 
@@ -45,6 +48,7 @@ class ModelWarships extends Model {
             'size' => $size,
             'number' => $number,
         ];
+
         $this->db->produceStatement($sql, $params);
     }
 
@@ -55,6 +59,7 @@ class ModelWarships extends Model {
             'gameId' => $gameId,
             'playerId' => $playerId,
         ];
+
         $this->db->produceStatement($sql, $params);
     }
 }

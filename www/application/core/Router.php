@@ -48,11 +48,13 @@ class Router {
                 $handler = $handler[$segment];
             } else break;
         }
+
         extract($handler);
-        try {
+
+        if (method_exists('\Application\Controllers\Sot' . $controllerName, $method)){
             $controller = new $controllerName();
             $controller->$method($url);
-        } catch (Exception $ex) {
+        } else {
             NotFound::notFound();
         }
     }

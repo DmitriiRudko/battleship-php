@@ -38,7 +38,7 @@ class Ready extends Controller {
 
         $playerShips = $this->modelWarships->getPlayerWarships($gameId, $gameInfo['me']['id']);
 
-        if (count($playerShips) != ModelWarships::SHIPS_AMOUNT) {
+        if (count($playerShips) !== ModelWarships::SHIPS_AMOUNT) {
             JsonHelper::successFalse('You have not placed all the ships yet');
             return;
         }

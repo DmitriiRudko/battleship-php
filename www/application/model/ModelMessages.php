@@ -21,7 +21,9 @@ class ModelMessages extends Model {
             'from' => $from,
             'to' => $to,
         ];
+
         $messages = $this->db->getMany($sql, $params);
+
         return $messages;
     }
 
@@ -34,6 +36,7 @@ class ModelMessages extends Model {
             'sender' => $senderId,
             'message' => $message,
         ];
+
         $this->db->produceStatement($sql, $params);
     }
 }

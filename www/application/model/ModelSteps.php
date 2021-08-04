@@ -14,7 +14,9 @@ class ModelSteps extends Model {
             'id' => $gameId,
             'playerId' => $playerId,
         ];
+
         $steps = $this->db->getMany($sql, $params);
+
         return $steps;
     }
 
@@ -28,6 +30,7 @@ class ModelSteps extends Model {
             'x' => $x,
             'y' => $y,
         ];
+
         $this->db->produceStatement($sql, $params);
     }
 }

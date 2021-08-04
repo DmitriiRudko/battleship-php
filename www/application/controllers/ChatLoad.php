@@ -24,6 +24,7 @@ class ChatLoad extends Controller {
             JsonHelper::successFalse('Wrong parameters');
             return;
         }
+
         if (!$this->getGameInfo($gameId, $playerCode)) {
             JsonHelper::successFalse('Wrong parameters');
             return;
@@ -38,6 +39,7 @@ class ChatLoad extends Controller {
                 'message' => $message['message'],
             ];
         }, $messagesRaw);
+
         $messagesPretty = [
             'messages' => $messagesPretty,
             'lastTime' => $lastTime - ModelMessages::OFFSET_SEC,

@@ -21,6 +21,7 @@ class ModelGames extends Model {
     public function newGame(int $initiatorId, int $invitedId): array {
         $sql = "INSERT INTO games (`initiator_id`, `invited_id`, `turn`)
                 VALUES (:initiator, :invited, :turn)";
+
         $turn = random_int(0, 1);
         $turn = [$initiatorId, $invitedId][$turn];
         $params = [
@@ -28,15 +29,18 @@ class ModelGames extends Model {
             'invited' => $invitedId,
             'turn' => $turn,
         ];
+
         $this->db->produceStatement($sql, $params);
         $result = [
             'id' => $this->db->lastInsertedId(),
         ];
+
         return $result;
     }
 
     public function getEnemy(int $gameId, string $playerCode): array {
         $gameInfo = $this->getGameInfo($gameId);
+
         switch ($playerCode) {
             case $gameInfo['invited']['code']:
                 return $gameInfo['initiator'];
@@ -49,6 +53,7 @@ class ModelGames extends Model {
 
     public function whoIsNext(int $gameId): array {
         $gameInfo = $this->getGameInfo($gameId);
+
         switch ($gameInfo['next']) {
             case $gameInfo['invited']['id']:
                 return $gameInfo['invited'];
@@ -66,7 +71,9 @@ class ModelGames extends Model {
         $params = [
             'id' => $gameId,
         ];
+
         $gameInfo = $this->db->getOne($sql, $params);
+
         $sql = "SELECT *
                 FROM `users`
                 WHERE `id` = :initiatorId OR
@@ -75,7 +82,9 @@ class ModelGames extends Model {
             'initiatorId' => $gameInfo['initiator_id'],
             'invitedId' => $gameInfo['invited_id'],
         ];
+
         $usersInfo = $this->db->getMany($sql, $params);
+
         if ($gameInfo['initiator_id'] == $usersInfo[0]['id']) {
             $gameInfo = array_merge($gameInfo, [
                 'initiator' => $usersInfo[0],
@@ -87,7 +96,9 @@ class ModelGames extends Model {
                 'invited' => $usersInfo[0]
             ]);
         }
+
         unset($gameInfo['initiator_id'], $gameInfo['invited_id']);
+
         return $gameInfo;
     }
 
@@ -99,10 +110,11 @@ class ModelGames extends Model {
         $params = [
             'gameId' => $gameId,
         ];
+
         $this->db->produceStatement($sql, $params);
     }
 
-    public function setGameStatus($gameId, $status) {
+    public function setGameStatus(int $gameId, int $status): void {
         $sql = "UPDATE `games`
                 SET `status` = :status
                 WHERE `id` = :id";
@@ -110,6 +122,7 @@ class ModelGames extends Model {
             'id' => $gameId,
             'status' => $status,
         ];
+
         $this->db->produceStatement($sql, $params);
     }
 

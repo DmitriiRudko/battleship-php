@@ -14,6 +14,7 @@ class Database {
         if (!isset(self::$instance)) {
             self::$instance = new self();
         }
+
         return self::$instance;
     }
 
@@ -21,7 +22,7 @@ class Database {
         try {
             $this->db = new PDO(DNS, USER, PASSWD, OPT);
         } catch (Exception $ex) {
-            echo 'Caught exception: ', $ex->getMessage(), "\n";
+            echo 'Caught exception: ', $ex->getMessage(), '\n';
         }
     }
 
@@ -29,6 +30,7 @@ class Database {
         $stm = $this->db->prepare($sql);
         $stm->execute($params);
         $data = $stm->fetch();
+
         return $data;
     }
 
@@ -36,6 +38,7 @@ class Database {
         $stm = $this->db->prepare($sql);
         $stm->execute($params);
         $data = $stm->fetchAll();
+
         return $data;
     }
 

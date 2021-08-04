@@ -12,13 +12,14 @@ class Controller {
 
         if (!$gameInfo) return null;
 
-        $isCurrentGameUser = $gameInfo['invited']['code'] == $playerCode
-            || $gameInfo['initiator']['code'] == $playerCode;
+        $isCurrentGameUser = $gameInfo['invited']['code'] === $playerCode
+            || $gameInfo['initiator']['code'] === $playerCode;
+
         if ($isCurrentGameUser) {
-            $gameInfo['me'] = ($gameInfo['invited']['code'] == $playerCode ? $gameInfo['invited'] : $gameInfo['initiator']);
+            $gameInfo['me'] = ($gameInfo['invited']['code'] === $playerCode ? $gameInfo['invited'] : $gameInfo['initiator']);
             return $gameInfo;
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

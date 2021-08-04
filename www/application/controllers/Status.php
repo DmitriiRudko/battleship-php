@@ -53,25 +53,30 @@ class Status extends Controller {
                 'myTurn' => $gameInfo['me']['id'] == $gameInfo['turn'],
             ]
         ];
+
         if ($info['game']['status'] === ModelGames::GAME_HAS_NOT_BEGUN_STATUS)
             $info['game'] = array_merge($info['game'], [
                 'meReady' => $this->modelUsers->isReady($this->modelUsers->getUserId($playerCode)),
             ]);
+
         if (!isset($params['short'])) {
             $enemy = $this->modelGames->getEnemy($gameId, $playerCode);
             $myShips = $this->modelWarships->getPlayerWarships($gameId, $gameInfo['me']['id']);
             $enemyShips = $this->modelWarships->getPlayerWarships($gameId, $enemy['id']);
             $mySteps = $this->modelSteps->getPlayerSteps($gameId, $gameInfo['me']['id']);
             $enemySteps = $this->modelSteps->getPlayerSteps($gameId, $enemy['id']);
+
             $usedPlaces = array_map(function ($ship) {
                 return $ship['size'] . '-' . $ship['number'];
             }, $myShips);
+
             $fieldsInfo = $this->fieldHelper::getFieldsInfo($myShips, $enemyShips, $mySteps, $enemySteps);
             $fieldsInfo['fieldMy'] = self::transpose($fieldsInfo['fieldMy']);
             $fieldsInfo['fieldEnemy'] = self::transpose($fieldsInfo['fieldEnemy']);
             $info = array_merge($info, $fieldsInfo);
             $info = array_merge($info, ['usedPlaces' => $usedPlaces,]);
         }
+
         $info = array_merge_recursive($info, [
             'success' => true,
         ]);
@@ -79,7 +84,7 @@ class Status extends Controller {
         JsonHelper::jsonifyAndSend($info);
     }
 
-    private static function transpose($array) {
+    private static function transpose(array $array) : array {
         array_unshift($array, null);
         return call_user_func_array('array_map', $array);
     }
