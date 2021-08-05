@@ -6,7 +6,7 @@ require_once(dirname(__FILE__) . "/../model/ModelGames.php");
 use Application\Model\ModelGames;
 
 class Controller {
-    public function getGameInfo(int $gameId, string $playerCode) {
+    public function getGameInfo(int $gameId, string $playerCode): ?array {
         $model = new ModelGames();
         $gameInfo = $model->getGameInfo($gameId);
 

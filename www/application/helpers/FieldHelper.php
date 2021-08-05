@@ -13,8 +13,8 @@ class FieldHelper {
 
     private function createShipsField(): void {
         $this->fieldShips = array_fill(0, 10, array_fill(0, 10, null));
-        foreach ($this->ships as &$ship) {
-            switch ($ship['orientation']) {
+        foreach ($this->ships as &$ship) {  // here we keep a link to the ship to reduce health in every cell
+            switch ($ship['orientation']) {  //  by accessing one of them
                 case 'vertical':
                     $x = $ship['x'];
                     for ($y = $ship['y']; $y < $ship['y'] + $ship['size']; $y++) {
@@ -45,7 +45,7 @@ class FieldHelper {
     }
 
     private function isAlreadyExist(array $ships, int $size, int $number): bool {
-        foreach ($this->ships as $ship){
+        foreach ($this->ships as $ship) {
             if ($ship['size'] === $size && $ship['number'] === $number) return true;
         }
         return false;
@@ -56,8 +56,8 @@ class FieldHelper {
         $this->steps = $steps;
 
         if (isset($this->steps)) {
-            foreach ($this->ships as &$ship) {
-                $ship['health'] = $ship['size'];
+            foreach ($this->ships as &$ship) {  // keeping links to the ships in every cell of the field
+                $ship['health'] = $ship['size'];  // to easier access to health status of the ship
             }
         }
     }
@@ -110,12 +110,12 @@ class FieldHelper {
         switch ($orientation) {  //check location relative to other ships
             case 'vertical':
                 for ($i = $y - 1; $i <= $y + $size; $i++) {
-                    if ($this->fieldShips[$i][$x - 1] || $this->fieldShips[$i][$x] || $this->fieldShips[$i][$x + 1]) return false;
+                    if (isset($this->fieldShips[$i][$x - 1], $this->fieldShips[$i][$x], $this->fieldShips[$i][$x + 1])) return false;
                 }
                 break;
             case 'horizontal':
                 for ($j = $x - 1; $j <= $x + $size; $j++) {
-                    if ($this->fieldShips[$y - 1][$j] || $this->fieldShips[$y][$j] || $this->fieldShips[$y + 1][$j]) return false;
+                    if (isset($this->fieldShips[$y - 1][$j], $this->fieldShips[$y][$j], $this->fieldShips[$y + 1][$j])) return false;
                 }
                 break;
         }
@@ -123,7 +123,7 @@ class FieldHelper {
         return true;
     }
 
-    public function isPossibleToShoot($x, $y) {
+    public function isPossibleToShoot($x, $y): bool {
         if (!isset($this->fieldShips)) {
             $this->createShipsField();
         }
@@ -135,7 +135,7 @@ class FieldHelper {
         return !(bool)$this->fieldShoots[$y][$x];
     }
 
-    public function shoot($x, $y) {
+    public function shoot($x, $y): bool {
         if (!isset($this->fieldShips)) {
             $this->createShipsField();
         }
@@ -174,7 +174,7 @@ class FieldHelper {
         return (bool)$this->fieldShips[$y][$x];
     }
 
-    public static function getFieldsInfo($myShips, $enemyShips, $mySteps, $enemySteps) {
+    public static function getFieldsInfo($myShips, $enemyShips, $mySteps, $enemySteps): array {
         $myField = array_fill(0, 10, array_fill(0, 10, [
             0 => 'empty',
             1 => 0,
@@ -216,7 +216,7 @@ class FieldHelper {
         ];
     }
 
-    public function isOver() {
+    public function isOver(): bool {
         $result = array_reduce($this->ships, function ($carry, $item) {
             $carry += $item['health'];
             return $carry;
