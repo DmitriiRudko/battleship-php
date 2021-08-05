@@ -110,12 +110,18 @@ class FieldHelper {
         switch ($orientation) {  //check location relative to other ships
             case 'vertical':
                 for ($i = $y - 1; $i <= $y + $size; $i++) {
-                    if (isset($this->fieldShips[$i][$x - 1], $this->fieldShips[$i][$x], $this->fieldShips[$i][$x + 1])) return false;
+                    if (isset($this->fieldShips[$i][$x - 1])
+                        || isset($this->fieldShips[$i][$x])
+                        || isset($this->fieldShips[$i][$x + 1]))
+                        return false;
                 }
                 break;
             case 'horizontal':
                 for ($j = $x - 1; $j <= $x + $size; $j++) {
-                    if (isset($this->fieldShips[$y - 1][$j], $this->fieldShips[$y][$j], $this->fieldShips[$y + 1][$j])) return false;
+                    if (isset($this->fieldShips[$y - 1][$j])
+                        || isset($this->fieldShips[$y][$j])
+                        || isset($this->fieldShips[$y + 1][$j]))
+                        return false;
                 }
                 break;
         }
