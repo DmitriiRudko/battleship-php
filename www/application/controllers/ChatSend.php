@@ -26,7 +26,7 @@ class ChatSend extends Controller {
         }
 
         $message = mb_strimwidth($_POST['message'], 0, ModelMessages::MESSAGE_MAX_LEN);
-        $this->modelMessages->sendMessage($gameId, $gameInfo['me']['id'], $message);
+        $this->modelMessages->sendMessage($gameId, $gameInfo['me']['id'], htmlspecialchars($message));
 
         JsonHelper::successTrue();
     }

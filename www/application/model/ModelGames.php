@@ -102,9 +102,9 @@ class ModelGames extends Model {
         return $gameInfo;
     }
 
-    public function enemysTurn(int $gameId): void {
+    public function setEnemysTurn(int $gameId): void {
         $sql = "UPDATE `games` SET `turn` = CASE 
-                WHEN `turn` = `initiator_id` THEN `invited_id` 
+                WHEN `turn` = `initiator_id` THEN `invited_id`  
                 WHEN `turn` = `invited_id` THEN `initiator_id`
                 END WHERE `id` = :gameId;";
         $params = [

@@ -70,7 +70,7 @@ class Shot extends Controller {
                 $this->modelGames->setGameStatus($gameId, ModelGames::GAME_OVER_STATUS);
             }
         } else {
-            $this->modelGames->enemysTurn($gameId);
+            $this->modelGames->setEnemysTurn($gameId);
         }
 
         JsonHelper::successTrue();

@@ -45,7 +45,7 @@ class PlaceShip extends Controller {
             });
 
             if (!empty($sameShips)) {
-                $this->turn($gameId, $gameInfo['me']['id'], $sameShips[0]['orientation']);
+                $this->turn($gameId, $gameInfo['me']['id'], $sameShips[array_key_first($sameShips)]['orientation']);
             } else {
                 $this->placeOne($gameId, $gameInfo['me']['id']);
             }

@@ -25,13 +25,9 @@ class ChatLoad extends Controller {
             return;
         }
 
-        if (!$this->getGameInfo($gameId, $playerCode)) {
-            JsonHelper::successFalse('Wrong parameters');
-            return;
-        }
-
-        isset($_GET['lastTime']) ? $lastTime = (int)$_GET['lastTime'] : $lastTime = time();
-        $messagesRaw = $this->modelMessages->loadMessages($gameId, $lastTime - ModelMessages::OFFSET_SEC, $lastTime);
+        $lastTime = isset($_GET['lastTime']) ? (int)$_GET['lastTime'] : time();
+        $messagesRaw = $this->modelMessages->loadMessages($gameId,
+            date("Y-m-d H:m:s", $lastTime - ModelMessages::OFFSET_SEC), date("Y-m-d H:m:s", $lastTime));
         $messagesPretty = array_map(function ($message) use ($playerCode) {
             return [
                 'my' => $playerCode == $message['sender'],

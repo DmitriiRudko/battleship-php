@@ -6,15 +6,15 @@ require_once(dirname(__FILE__) . "/../core/Model.php");
 use Application\Core\Model;
 
 class ModelMessages extends Model {
-    public const OFFSET_SEC = 60;
+    public const OFFSET_SEC = 6000;
 
     public const MESSAGE_MAX_LEN = 250;
 
-    public function loadMessages(int $gameId, int $from, int $to): array {
-        $sql = "SELECT `sender`, `message`, UNIX_TIMESTAMP(`time`) as time
+    public function loadMessages(int $gameId, string $from, string $to): array {
+        $sql = "SELECT * 
                 FROM `messages` 
-                WHERE `game_id` = :gameId AND UNIX_TIMESTAMP(`time`) > :from
-                AND UNIX_TIMESTAMP(`time`) <= :to
+                WHERE `game_id` = :gameId AND `time` > :from
+                AND `time` <= :to
                 ORDER BY `time` ASC";
         $params = [
             'gameId' => $gameId,
